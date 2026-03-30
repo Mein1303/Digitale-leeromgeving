@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marktanalyse — Les 2: Tijdframes</title>
+<style>
+  
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e1a;
+    color: #e8eaf6;
+    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  .module-tag {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #7986cb;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: #7986cb;
+    font-size: 0.85rem;
+    margin-bottom: 28px;
+    font-family: monospace;
+  }
+
+  .section {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #90caf9;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: monospace;
+  }
+
+  .intro-text {
+    font-size: 0.88rem;
+    color: #90a4ae;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  /* TIJDFRAME LADDER */
+  .ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ladder-group {
+    margin-bottom: 8px;
+  }
+
+  .ladder-group-title {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    padding-left: 4px;
+  }
+
+  .ladder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .ladder-item:hover, .ladder-item.active {
+    border-color: #3949ab;
+    background: #0d1b35;
+  }
+
+  .ladder-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .ladder-name {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #fff;
+    min-width: 60px;
+  }
+
+  .ladder-desc {
+    font-size: 0.8rem;
+    color: #78909c;
+    flex: 1;
+  }
+
+  .ladder-badge {
+    font-family: monospace;
+    font-size: 0.65rem;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #1a237e;
+    color: #90caf9;
+  }
+
+  .ladder-badge.bert { background: #1b3a1b; color: #81c784; }
+  .ladder-badge.zipp { background: #3e1a1a; color: #ef9a9a; }
+
+  /* CANDLE SIZE VISUAL */
+  .candle-compare {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 20px 0 10px;
+    flex-wrap: wrap;
+  }
+
+  .candle-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .candle-col-label {
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: #546e7a;
+    text-align: center;
+  }
+
+  /* 4 YEAR CYCLE */
+  .cycle-timeline {
+    position: relative;
+    padding: 20px 0;
+    overflow-x: auto;
+  }
+
+  .cycle-chart {
+    min-width: 320px;
+  }
+
+  .highlight-box {
+    background: #0d1b2a;
+    border-left: 3px solid #ffd54f;
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #cfd8dc;
+    line-height: 1.6;
+  }
+
+  .highlight-box.green { border-left-color: #66bb6a; }
+  .highlight-box.blue { border-left-color: #90caf9; }
+  .highlight-box.red { border-left-color: #ef5350; }
+
+  /* DETAIL PANEL */
+  .detail-panel {
+    background: #0d1b35;
+    border: 1px solid #3949ab;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #cfd8dc;
+    display: none;
+  }
+
+  .detail-panel.visible { display: block; }
+
+  /* QUIZ */
+  .quiz-btn {
+    background: #1a237e;
+    border: 1px solid #3949ab;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+  }
+
+  .quiz-btn:hover { background: #283593; }
+  .quiz-result {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: none;
+  }
+  .quiz-result.correct { background: #1b5e20; color: #a5d6a7; border: 1px solid #2e7d32; }
+  .quiz-result.wrong { background: #b71c1c; color: #ffcdd2; border: 1px solid #c62828; }
+
+  .green { color: #66bb6a; }
+  .red { color: #ef5350; }
+  .yellow { color: #ffd54f; }
+  .blue { color: #90caf9; }
+
+  .nav-pills {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #1e2a45;
+    background: #0a0e1a;
+    color: #7986cb;
+    font-family: monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pill.active, .pill:hover {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  .pill-content { display: none; }
+  .pill-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="module-tag">Marktanalyse · Module 1 · Les 2</div>
+<h1>⏱️ Tijdframes</h1>
+<p class="subtitle">Van 1 minuut tot 4 jaar — aandelen, crypto, forex</p>
+
+<!-- SECTION 1: WAT IS EEN TIJDFRAME -->
+<div class="section">
+  <h2>Wat is een tijdframe?</h2>
+  <p class="intro-text">
+    Elke grafiek heeft een tijdframe. Dit bepaalt wat <strong>één kaarsje</strong> voorstelt. Op een 1-uur grafiek is elk kaarsje precies 1 uur. Op een weekgrafiek is elk kaarsje een hele week.
+  </p>
+  <p class="intro-text">
+    Dezelfde markt ziet er <strong>compleet anders</strong> uit op verschillende tijdframes. Wat op een 1-uur grafiek een grote daling lijkt, is op een weekgrafiek soms nauwelijks zichtbaar.
+  </p>
+
+  <div class="candle-compare">
+    <!-- 1 uur: veel kleine kaarsjes -->
+    <div class="candle-col">
+      <svg width="90" height="80" viewBox="0 0 90 80">
+        <!-- many small candles -->
+        <line x1="8" y1="5" x2="8" y2="10" stroke="#66bb6a" stroke-width="1"/>
+        <rect x="5" y="10" width="6" height="15" fill="#66bb6a" rx="1"/>
+        <line x1="8" y1="25" x2="8" y2="30" stroke="#66bb6a" stroke-width="1"/>
+
+        <line x1="20" y1="8" x2="20" y2="12" stroke="#ef5350" stroke-width="1"/>
+        <rect x="17" y="12" width="6" height="12" fill="#ef5350" rx="1"/>
+        <line x1="20" y1="24" x2="20" y2="28" stroke="#ef5350" stroke-width="1"/>
+
+        <line x1="32" y1="15" x2="32" y2="18" stroke="#66bb6a" stroke-width="1"/>
+        <rect x="29" y="18" width="6" height="10" fill="#66bb6a" rx="1"/>
+        <line x1="32" y1="28" x2="32" y2="33" stroke="#66bb6a" stroke-width="1"/>
+
+        <line x1="44" y1="10" x2="44" y2="14" stroke="#ef5350" stroke-width="1"/>
+        <rect x="41" y="14" width="6" height="14" fill="#ef5350" rx="1"/>
+        <line x1="44" y1="28" x2="44" y2="32" stroke="#ef5350" stroke-width="1"/>
+
+        <line x1="56" y1="12" x2="56" y2="16" stroke="#66bb6a" stroke-width="1"/>
+        <rect x="53" y="16" width="6" height="11" fill="#66bb6a" rx="1"/>
+        <line x1="56" y1="27" x2="56" y2="31" stroke="#66bb6a" stroke-width="1"/>
+
+        <line x1="68" y1="9" x2="68" y2="13" stroke="#ef5350" stroke-width="1"/>
+        <rect x="65" y="13" width="6" height="13" fill="#ef5350" rx="1"/>
+        <line x1="68" y1="26" x2="68" y2="30" stroke="#ef5350" stroke-width="1"/>
+
+        <line x1="80" y1="6" x2="80" y2="11" stroke="#66bb6a" stroke-width="1"/>
+        <rect x="77" y="11" width="6" height="16" fill="#66bb6a" rx="1"/>
+        <line x1="80" y1="27" x2="80" y2="32" stroke="#66bb6a" stroke-width="1"/>
+
+        <text x="45" y="70" fill="#546e7a" font-size="8" font-family="monospace" text-anchor="middle">veel ruis</text>
+      </svg>
+      <div class="candle-col-label">1 uur grafiek<br>veel kaarsjes</div>
+    </div>
+
+    <!-- 1 dag: middelgroot -->
+    <div class="candle-col">
+      <svg width="60" height="80" viewBox="0 0 60 80">
+        <line x1="15" y1="5" x2="15" y2="15" stroke="#66bb6a" stroke-width="1.5"/>
+        <rect x="9" y="15" width="12" height="30" fill="#66bb6a" rx="2"/>
+        <line x1="15" y1="45" x2="15" y2="55" stroke="#66bb6a" stroke-width="1.5"/>
+
+        <line x1="38" y1="8" x2="38" y2="18" stroke="#ef5350" stroke-width="1.5"/>
+        <rect x="32" y="18" width="12" height="28" fill="#ef5350" rx="2"/>
+        <line x1="38" y1="46" x2="38" y2="56" stroke="#ef5350" stroke-width="1.5"/>
+
+        <text x="30" y="72" fill="#546e7a" font-size="8" font-family="monospace" text-anchor="middle">rustiger</text>
+      </svg>
+      <div class="candle-col-label">Dag grafiek<br>minder ruis</div>
+    </div>
+
+    <!-- 1 week: groot -->
+    <div class="candle-col">
+      <svg width="40" height="80" viewBox="0 0 40 80">
+        <line x1="20" y1="3" x2="20" y2="12" stroke="#66bb6a" stroke-width="2"/>
+        <rect x="10" y="12" width="20" height="50" fill="#66bb6a" rx="2"/>
+        <line x1="20" y1="62" x2="20" y2="72" stroke="#66bb6a" stroke-width="2"/>
+      </svg>
+      <div class="candle-col-label">Week grafiek<br>groot beeld</div>
+    </div>
+  </div>
+
+  <div class="highlight-box blue">
+    💡 <strong>Vuistregel:</strong> Hoe groter het tijdframe, hoe minder ruis en hoe betrouwbaarder het signaal. Maar je ziet ook minder detail.
+  </div>
+</div>
+
+<!-- SECTION 2: ALLE TIJDFRAMES -->
+<div class="section">
+  <h2>Alle tijdframes — klik voor uitleg</h2>
+
+  <div class="ladder">
+    <!-- SCALPING -->
+    <div class="ladder-group">
+      <div class="ladder-group-title">⚡ Zeer kort — scalping</div>
+      <div class="ladder-item" onclick="toggleDetail('d1m')">
+        <div class="ladder-dot" style="background:#ef5350"></div>
+        <div class="ladder-name">1 minuut</div>
+        <div class="ladder-desc">Extreem korte trades</div>
+      </div>
+      <div id="d1m" class="detail-panel">Alleen voor zeer ervaren traders die seconde voor seconde handelen. Veel ruis, veel stress. Vrijwel onmogelijk voor beginners.</div>
+
+      <div class="ladder-item" onclick="toggleDetail('d5m')">
+        <div class="ladder-dot" style="background:#ef5350"></div>
+        <div class="ladder-name">5 minuten</div>
+        <div class="ladder-desc">Iets rustiger, nog steeds snel</div>
+      </div>
+      <div id="d5m" class="detail-panel">Nog steeds erg snel. Traders moeten de hele dag achter hun scherm zitten.</div>
+
+      <div class="ladder-item" onclick="toggleDetail('d15m')">
+        <div class="ladder-dot" style="background:#ef5350"></div>
+        <div class="ladder-name">15 minuten</div>
+        <div class="ladder-desc">Populair bij dagtraders</div>
+      </div>
+      <div id="d15m" class="detail-panel">Geeft iets meer context dan 5 minuten. Nog steeds veel actieve monitoring nodig.</div>
+    </div>
+
+    <!-- DAGTRADING -->
+    <div class="ladder-group">
+      <div class="ladder-group-title">📊 Kort — dagtrading</div>
+      <div class="ladder-item" onclick="toggleDetail('d1h')">
+        <div class="ladder-dot" style="background:#ffa726"></div>
+        <div class="ladder-name">1 uur</div>
+        <div class="ladder-desc">Korte termijn analyse</div>
+      </div>
+      <div id="d1h" class="detail-panel">Goed voor het bekijken van korte termijn bewegingen. Nog steeds actief monitoren nodig maar iets ontspannener.</div>
+
+      <div class="ladder-item" onclick="toggleDetail('d4h')">
+        <div class="ladder-dot" style="background:#ffa726"></div>
+        <div class="ladder-name">4 uur</div>
+        <div class="ladder-desc">Populair bij swingtraders</div>
+      </div>
+      <div id="d4h" class="detail-panel">Één van de meest gebruikte tijdframes. Geeft een goed beeld van de richting zonder dat je de hele dag naar je scherm hoeft te staren.</div>
+    </div>
+
+    <!-- SWINGTRADING -->
+    <div class="ladder-group">
+      <div class="ladder-group-title">📈 Middellang — swingtrading</div>
+      <div class="ladder-item" onclick="toggleDetail('d12h')">
+        <div class="ladder-dot" style="background:#66bb6a"></div>
+        <div class="ladder-name">12 uur</div>
+        <div class="ladder-desc">Zipp's voorkeur</div>
+        <span class="ladder-badge zipp">zipp</span>
+      </div>
+      <div id="d12h" class="detail-panel">Zipp gebruikt dit veel. Groot genoeg om ruis te filteren, klein genoeg om kansen te zien. Elk kaarsje is een halve dag — je hoeft maar 2x per dag te kijken.</div>
+
+      <div class="ladder-item" onclick="toggleDetail('d1d')">
+        <div class="ladder-dot" style="background:#66bb6a"></div>
+        <div class="ladder-name">1 dag</div>
+        <div class="ladder-desc">Dagelijkse grafiek</div>
+      </div>
+      <div id="d1d" class="detail-panel">Elk kaarsje is één dag. Betrouwbare signalen. Goed voor middellange termijn. Je hoeft maar 1x per dag te kijken.</div>
+    </div>
+
+    <!-- LONG TERM -->
+    <div class="ladder-group">
+      <div class="ladder-group-title">🔭 Lang — positietrading</div>
+      <div class="ladder-item" onclick="toggleDetail('d1w')">
+        <div class="ladder-dot" style="background:#90caf9"></div>
+        <div class="ladder-name">1 week</div>
+        <div class="ladder-desc">Bert's voorkeur (weksluiting)</div>
+        <span class="ladder-badge bert">bert</span>
+      </div>
+      <div id="d1w" class="detail-panel">Bert Slagter van Satoshi Radio kijkt veel naar weeksluitingen. Elk kaarsje is een hele week. Kleine dagelijkse bewegingen verdwijnen. Je ziet de echte trend.</div>
+
+      <div class="ladder-item" onclick="toggleDetail('d1mo')">
+        <div class="ladder-dot" style="background:#90caf9"></div>
+        <div class="ladder-name">1 maand</div>
+        <div class="ladder-desc">Bert's voorkeur (maandsluiting)</div>
+        <span class="ladder-badge bert">bert</span>
+      </div>
+      <div id="d1mo" class="detail-panel">Bert kijkt vlak na maandsluiting naar de maandgrafiek. Elk kaarsje is een hele maand. Hier zie je de grote cycli en echte trendveranderingen.</div>
+    </div>
+
+    <!-- MACRO -->
+    <div class="ladder-group">
+      <div class="ladder-group-title">🌍 Macro — grote cycli</div>
+      <div class="ladder-item" onclick="toggleDetail('d4y')">
+        <div class="ladder-dot" style="background:#ce93d8"></div>
+        <div class="ladder-name">4 jaar cyclus</div>
+        <div class="ladder-desc">De Bitcoin haveringscyclus</div>
+        <span class="ladder-badge" style="background:#2d1b4e; color:#ce93d8;">halvering</span>
+      </div>
+      <div id="d4y" class="detail-panel">Dit is geen tijdframe op een grafiek, maar een macro-cyclus. Elke ~4 jaar halveert de beloning voor Bitcoin miners (halvering). Historisch gezien volgt hier altijd een grote bullmarkt op, daarna een bearmarkt, daarna een nieuwe bodem — en dan begint de cyclus opnieuw. Dit is het grote beeld waar jij als long-term belegger mee werkt.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: 4-JAAR CYCLUS VISUEEL -->
+<div class="section">
+  <h2>De 4-jaar cyclus visueel</h2>
+  <p class="intro-text">Elke cyclus begint bij een halvering en eindigt bij een nieuwe bodem:</p>
+
+  <div class="cycle-timeline">
+    <svg class="cycle-chart" width="340" height="200" viewBox="0 0 340 200">
+      <!-- baseline -->
+      <line x1="20" y1="170" x2="320" y2="170" stroke="#1e2a45" stroke-width="1"/>
+
+      <!-- CYCLE 1 -->
+      <path d="M20,160 Q45,140 60,90 Q75,40 90,30 Q105,40 115,100 Q125,140 140,160" 
+            fill="none" stroke="#66bb6a" stroke-width="2" opacity="0.6"/>
+      <circle cx="90" cy="30" r="4" fill="#ffd54f"/>
+      <text x="90" y="22" fill="#ffd54f" font-size="7" font-family="monospace" text-anchor="middle">$69K</text>
+      <text x="90" y="14" fill="#ffd54f" font-size="7" font-family="monospace" text-anchor="middle">2021</text>
+      <!-- bodem -->
+      <circle cx="20" cy="160" r="3" fill="#ef5350"/>
+      <text x="20" y="180" fill="#ef5350" font-size="6" font-family="monospace" text-anchor="middle">2019</text>
+      <!-- halvering -->
+      <line x1="48" y1="155" x2="48" y2="170" stroke="#ce93d8" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="48" y="185" fill="#ce93d8" font-size="6" font-family="monospace" text-anchor="middle">halv.</text>
+      <text x="48" y="193" fill="#ce93d8" font-size="6" font-family="monospace" text-anchor="middle">2020</text>
+
+      <!-- CYCLE 2 -->
+      <path d="M140,160 Q165,140 180,80 Q195,25 210,15 Q225,25 235,90 Q245,140 260,160" 
+            fill="none" stroke="#66bb6a" stroke-width="2" opacity="0.8"/>
+      <circle cx="210" cy="15" r="4" fill="#ffd54f"/>
+      <text x="210" y="8" fill="#ffd54f" font-size="7" font-family="monospace" text-anchor="middle">$126K</text>
+      <text x="228" y="8" fill="#ffd54f" font-size="7" font-family="monospace" text-anchor="middle">2025</text>
+      <!-- bodem -->
+      <circle cx="140" cy="160" r="3" fill="#ef5350"/>
+      <text x="140" y="180" fill="#ef5350" font-size="6" font-family="monospace" text-anchor="middle">2022</text>
+      <!-- halvering -->
+      <line x1="168" y1="155" x2="168" y2="170" stroke="#ce93d8" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="168" y="185" fill="#ce93d8" font-size="6" font-family="monospace" text-anchor="middle">halv.</text>
+      <text x="168" y="193" fill="#ce93d8" font-size="6" font-family="monospace" text-anchor="middle">2024</text>
+
+      <!-- CYCLE 3 — toekomst -->
+      <path d="M260,160 Q275,150 285,130 Q295,110 310,100" 
+            fill="none" stroke="#90caf9" stroke-width="2" stroke-dasharray="5,3" opacity="0.6"/>
+      <text x="310" y="95" fill="#90caf9" font-size="7" font-family="monospace">?</text>
+      <!-- bodem nu -->
+      <circle cx="260" cy="160" r="3" fill="#ef5350"/>
+      <text x="260" y="180" fill="#ef5350" font-size="6" font-family="monospace" text-anchor="middle">2026?</text>
+
+      <!-- WE ARE HERE -->
+      <line x1="270" y1="145" x2="270" y2="170" stroke="#ffd54f" stroke-width="1.5" stroke-dasharray="2,2"/>
+      <text x="270" y="140" fill="#ffd54f" font-size="7" font-family="monospace" text-anchor="middle">▼ nu</text>
+
+      <!-- halvering 2028 -->
+      <line x1="288" y1="155" x2="288" y2="170" stroke="#ce93d8" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="288" y="185" fill="#ce93d8" font-size="6" font-family="monospace" text-anchor="middle">halv.</text>
+      <text x="288" y="193" fill="#ce93d8" font-size="6" font-family="monospace" text-anchor="middle">2028</text>
+
+      <!-- LEGENDA -->
+      <circle cx="30" cy="10" r="3" fill="#ffd54f"/>
+      <text x="38" y="14" fill="#ffd54f" font-size="7" font-family="monospace">piek</text>
+      <circle cx="75" cy="10" r="3" fill="#ef5350"/>
+      <text x="83" y="14" fill="#ef5350" font-size="7" font-family="monospace">bodem</text>
+      <line x1="115" y1="10" x2="125" y2="10" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="128" y="14" fill="#ce93d8" font-size="7" font-family="monospace">halvering</text>
+    </svg>
+  </div>
+
+  <div class="highlight-box green">
+    💡 <strong>Jouw situatie:</strong> Je zit nu mogelijk in de bearmarktfase van cyclus 3. Als de historische cyclus zich herhaalt, zou de volgende halvering in 2028 een nieuwe bullmarkt kunnen triggeren. Dit is waarom jij bereid bent lang te wachten.
+  </div>
+
+  <div class="highlight-box red" style="margin-top:10px;">
+    ⚠️ <strong>Belangrijk:</strong> Geschiedenis herhaalt zich niet altijd exact. De 4-jaar cyclus is een patroon, geen garantie.
+  </div>
+</div>
+
+<!-- SECTION 4: WELK TIJDFRAME VOOR JOU? -->
+<div class="section">
+  <h2>Welk tijdframe past bij jou?</h2>
+
+  <div class="nav-pills">
+    <button class="pill active" onclick="showPill('p1', this)">Long-term hodler</button>
+    <button class="pill" onclick="showPill('p2', this)">Swingtrader</button>
+    <button class="pill" onclick="showPill('p3', this)">Dagtrader</button>
+  </div>
+
+  <div id="p1" class="pill-content active">
+    <div class="highlight-box green">
+      <strong>Jouw profiel — Long-term hodler</strong><br><br>
+      Zoals jij: kopen en lang vasthouden. Je hoeft niet elke dag naar grafieken te kijken.<br><br>
+      <strong>Beste tijdframes voor jou:</strong><br>
+      • Weekgrafiek — voor grote trend<br>
+      • Maandgrafiek — voor cyclus positie<br>
+      • 4-jaar cyclus — voor grote plaatje<br><br>
+      <strong>Zoals Bert Slagter het doet:</strong> kijk naar weeksluitingen en maandsluitingen. Die geven het meest betrouwbare signaal voor lange termijn beleggers.
+    </div>
+  </div>
+
+  <div id="p2" class="pill-content">
+    <div class="highlight-box" style="border-left-color:#90caf9;">
+      <strong>Swingtrader — zoals zipp</strong><br><br>
+      Kopen en verkopen over dagen tot weken.<br><br>
+      <strong>Beste tijdframes:</strong><br>
+      • 12 uur — zipp's voorkeur<br>
+      • 4 uur — voor instap timing<br>
+      • 1 dag — voor bevestiging<br><br>
+      Vereist meer kennis en monitoring dan long-term hodlen.
+    </div>
+  </div>
+
+  <div id="p3" class="pill-content">
+    <div class="highlight-box red">
+      <strong>Dagtrader — niet aanbevolen voor beginners</strong><br><br>
+      Elke dag kopen en verkopen. Veel stress, veel kennis nodig.<br><br>
+      <strong>Tijdframes:</strong><br>
+      • 15 minuten<br>
+      • 1 uur<br>
+      • 4 uur<br><br>
+      ⚠️ Meer dan 80% van dagtraders verliest geld. Niet voor beginners.
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="section">
+  <h2>🧠 Test jezelf</h2>
+  <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:14px;">
+    Bert Slagter kijkt vlak na het einde van de maand naar grafieken. Waarom?
+  </p>
+  <button class="quiz-btn" onclick="quizAnswer('a')">A) Omdat hij dan tijd heeft</button>
+  <button class="quiz-btn" onclick="quizAnswer('b')">B) Omdat de maandkaars dan gesloten is en hij signalen op maandniveau kan zien</button>
+  <button class="quiz-btn" onclick="quizAnswer('c')">C) Omdat de dagelijkse grafiek dan resetzt</button>
+  <div id="qresult" class="quiz-result"></div>
+</div>
+
+<script>
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  const isVisible = el.classList.contains('visible');
+  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('visible'));
+  if (!isVisible) el.classList.add('visible');
+}
+
+function showPill(id, el) {
+  document.querySelectorAll('.pill-content').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+function quizAnswer(choice) {
+  const r = document.getElementById('qresult');
+  r.style.display = 'block';
+  if (choice === 'b') {
+    r.className = 'quiz-result correct';
+    r.innerHTML = '✅ Correct! Als de maand sluit, kun je het volledige maandkaarsje analyseren. Bert gebruikt dit om signalen te zien die alleen op maandniveau zichtbaar zijn — de grote lijn.';
+  } else {
+    r.className = 'quiz-result wrong';
+    r.innerHTML = '❌ Niet helemaal. Het gaat erom dat de maandkaars gesloten is. Dan pas kun je het volledige signaal van die maand analyseren. Antwoord is B.';
+  }
+}
+</script>
+
+</body>
+</html>

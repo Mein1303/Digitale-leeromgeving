@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mijn Leeromgeving</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e1a;
+    color: #e8eaf6;
+    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  /* HEADER */
+  .header {
+    margin-bottom: 28px;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: #90caf9; }
+
+  .date {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    text-align: right;
+  }
+
+  .tagline {
+    font-size: 0.82rem;
+    color: #546e7a;
+    font-family: monospace;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 0.78rem;
+    color: #90a4ae;
+  }
+
+  .progress-count {
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: #90caf9;
+  }
+
+  .progress-bar {
+    background: #1e2a45;
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: linear-gradient(90deg, #3949ab, #90caf9);
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  /* THEMA TABS */
+  .thema-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .thema-tab {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid #1e2a45;
+    background: #131929;
+    color: #7986cb;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .thema-tab.active {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  .thema-content { display: none; }
+  .thema-content.active { display: block; }
+
+  /* MODULE HEADER */
+  .module-header {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    padding-left: 4px;
+  }
+
+  .module-header:first-of-type { margin-top: 0; }
+
+  /* LES KAART */
+  .les-card {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .les-card:hover {
+    border-color: #3949ab;
+    background: #0d1b35;
+  }
+
+  .les-card.locked {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .les-card.locked:hover {
+    border-color: #1e2a45;
+    background: #131929;
+  }
+
+  .les-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .les-icon.done { background: #1b3a1b; }
+  .les-icon.active { background: #1a237e; }
+  .les-icon.locked { background: #1e2a45; }
+
+  .les-info { flex: 1; }
+
+  .les-num {
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: #546e7a;
+    margin-bottom: 2px;
+  }
+
+  .les-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  .les-desc {
+    font-size: 0.75rem;
+    color: #78909c;
+  }
+
+  .les-status {
+    flex-shrink: 0;
+  }
+
+  .badge {
+    font-family: monospace;
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+
+  .badge-done { background: #1b3a1b; color: #81c784; }
+  .badge-active { background: #1a237e; color: #90caf9; }
+  .badge-locked { background: #1e2a45; color: #546e7a; }
+  .badge-soon { background: #2d1b00; color: #ffa726; }
+
+  /* BEGRIPPEN SECTIE */
+  .begrip-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .begrip-card {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .begrip-card:hover { border-color: #3949ab; }
+
+  .begrip-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+  }
+
+  .begrip-naam {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #fff;
+  }
+
+  .begrip-cat {
+    font-family: monospace;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .cat-order { background: #1a237e; color: #90caf9; }
+  .cat-markt { background: #1b3a1b; color: #81c784; }
+  .cat-kopen { background: #3e2c00; color: #ffd54f; }
+  .cat-ta { background: #2d1b4e; color: #ce93d8; }
+  .cat-psycho { background: #3e1a1a; color: #ef9a9a; }
+
+  .begrip-uitleg {
+    font-size: 0.8rem;
+    color: #78909c;
+    margin-top: 8px;
+    line-height: 1.5;
+    display: none;
+  }
+
+  .begrip-uitleg.visible { display: block; }
+
+  /* FILTER PILLS */
+  .filter-pills {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .filter-pill {
+    padding: 5px 10px;
+    border-radius: 16px;
+    border: 1px solid #1e2a45;
+    background: #0a0e1a;
+    color: #7986cb;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: monospace;
+  }
+
+  .filter-pill.active, .filter-pill:hover {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  /* COMING SOON */
+  .coming-soon {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #546e7a;
+  }
+
+  .coming-soon .big { font-size: 2rem; margin-bottom: 10px; }
+  .coming-soon p { font-size: 0.85rem; line-height: 1.6; }
+
+  /* ZOEKBALK */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    border-radius: 10px;
+    padding: 10px 14px 10px 36px;
+    color: #e8eaf6;
+    font-size: 0.85rem;
+    font-family: system-ui, sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: #3949ab; }
+  .search-input::placeholder { color: #546e7a; }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #546e7a;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">Mijn<span>Leeromgeving</span></div>
+    <div class="date" id="dateDisplay"></div>
+  </div>
+  <div class="tagline">persoonlijk · stap voor stap · altijd uitbreidbaar</div>
+</div>
+
+<!-- VOORTGANG -->
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Voortgang marktanalyse</span>
+    <span class="progress-count">3 / 24 lessen</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" style="width: 12.5%"></div>
+  </div>
+</div>
+
+<!-- THEMA TABS -->
+<div class="thema-tabs">
+  <button class="thema-tab active" onclick="showThema('markt', this)">📈 Marktanalyse</button>
+  <button class="thema-tab" onclick="showThema('macro', this)">🌍 Macro-economie</button>
+  <button class="thema-tab" onclick="showThema('begrippen', this)">📚 Begrippen</button>
+  <button class="thema-tab" onclick="showThema('meer', this)">＋ Meer</button>
+</div>
+
+<!-- THEMA: MARKTANALYSE -->
+<div id="thema-markt" class="thema-content active">
+
+  <div class="module-header">📊 Module 1 — De basis van een grafiek</div>
+
+  <a class="les-card" href="kaarsjes-uitleg.html">
+    <div class="les-icon done">🕯️</div>
+    <div class="les-info">
+      <div class="les-num">Les 1</div>
+      <div class="les-title">Kaarsjes</div>
+      <div class="les-desc">Wat vertelt één kaarsje? Groen, rood, wicks</div>
+    </div>
+    <div class="les-status"><span class="badge badge-done">✓ klaar</span></div>
+  </a>
+
+  <a class="les-card" href="tijdframes-les.html">
+    <div class="les-icon done">⏱️</div>
+    <div class="les-info">
+      <div class="les-num">Les 2</div>
+      <div class="les-title">Tijdframes</div>
+      <div class="les-desc">Van 1 minuut tot 4-jaar cyclus</div>
+    </div>
+    <div class="les-status"><span class="badge badge-done">✓ klaar</span></div>
+  </a>
+
+  <a class="les-card" href="steun-weerstand-les.html">
+    <div class="les-icon done">🧱</div>
+    <div class="les-info">
+      <div class="les-num">Les 3</div>
+      <div class="les-title">Steun & Weerstand</div>
+      <div class="les-desc">De basis van elke grafiekanalyse</div>
+    </div>
+    <div class="les-status"><span class="badge badge-done">✓ klaar</span></div>
+  </a>
+
+  <a class="les-card" href="#">
+    <div class="les-icon active">📖</div>
+    <div class="les-info">
+      <div class="les-num">Les 4</div>
+      <div class="les-title">Grafiek lezen</div>
+      <div class="les-desc">Van links naar rechts — trend herkennen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-active">→ volgende</span></div>
+  </a>
+
+  <div class="module-header">📊 Module 2 — Prijsstructuur</div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">📉</div>
+    <div class="les-info">
+      <div class="les-num">Les 5</div>
+      <div class="les-title">Swing low & Swing high</div>
+      <div class="les-desc">Dieptepunten en toppen herkennen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">↔️</div>
+    <div class="les-info">
+      <div class="les-num">Les 6</div>
+      <div class="les-title">Horizontale range</div>
+      <div class="les-desc">Zijwaartse markt herkennen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">📈</div>
+    <div class="les-info">
+      <div class="les-num">Les 7</div>
+      <div class="les-title">Trend</div>
+      <div class="les-desc">Stijgend, dalend of zijwaarts</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="module-header">📊 Module 3 — Marktgedrag</div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">🐂</div>
+    <div class="les-info">
+      <div class="les-num">Les 8</div>
+      <div class="les-title">Bull & bearmarkt</div>
+      <div class="les-desc">Grote marktcycli begrijpen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">🔄</div>
+    <div class="les-info">
+      <div class="les-num">Les 9</div>
+      <div class="les-title">Marktstructuurshift</div>
+      <div class="les-desc">Wanneer verandert de trend?</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">↩️</div>
+    <div class="les-info">
+      <div class="les-num">Les 10</div>
+      <div class="les-title">Bearish retest</div>
+      <div class="les-desc">Valse stijging herkennen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">🪤</div>
+    <div class="les-info">
+      <div class="les-num">Les 11</div>
+      <div class="les-title">SFP — Swing Failure Pattern</div>
+      <div class="les-desc">De valstrik voor short traders</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="module-header">📊 Module 4 — Indicatoren</div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">🔧</div>
+    <div class="les-info">
+      <div class="les-num">Les 12</div>
+      <div class="les-title">Wat is een indicator?</div>
+      <div class="les-desc">Leading vs lagging indicatoren</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">📊</div>
+    <div class="les-info">
+      <div class="les-num">Les 13</div>
+      <div class="les-title">RSI</div>
+      <div class="les-desc">Overbought & oversold herkennen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">〰️</div>
+    <div class="les-info">
+      <div class="les-num">Les 14</div>
+      <div class="les-title">MACD</div>
+      <div class="les-desc">Trend en momentum meten</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="module-header">📊 Module 5 — Handelen</div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">📋</div>
+    <div class="les-info">
+      <div class="les-num">Les 15</div>
+      <div class="les-title">Ordertypen</div>
+      <div class="les-desc">Markt, limiet en stop-loss</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">💰</div>
+    <div class="les-info">
+      <div class="les-num">Les 16</div>
+      <div class="les-title">Spot kopen & hodlen</div>
+      <div class="les-desc">Lang vasthouden als strategie</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">🔁</div>
+    <div class="les-info">
+      <div class="les-num">Les 17</div>
+      <div class="les-title">DCA</div>
+      <div class="les-desc">Gespreid instappen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">⚖️</div>
+    <div class="les-info">
+      <div class="les-num">Les 18</div>
+      <div class="les-title">Risk/reward</div>
+      <div class="les-desc">Risico en winst in balans</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">📐</div>
+    <div class="les-info">
+      <div class="les-num">Les 19</div>
+      <div class="les-title">Long & Short</div>
+      <div class="les-desc">Speculeren op stijging en daling</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">⚡</div>
+    <div class="les-info">
+      <div class="les-num">Les 20</div>
+      <div class="les-title">Leverage</div>
+      <div class="les-desc">Met geleend geld handelen</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="module-header">📊 Module 6 — Mindset</div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">🧠</div>
+    <div class="les-info">
+      <div class="les-num">Les 21</div>
+      <div class="les-title">Confirmation bias</div>
+      <div class="les-desc">Alleen zien wat je wil zien</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">😰</div>
+    <div class="les-info">
+      <div class="les-num">Les 22</div>
+      <div class="les-title">Emoties in de markt</div>
+      <div class="les-desc">Fear, greed en hoe je ermee omgaat</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+  <div class="les-card locked">
+    <div class="les-icon locked">👁️</div>
+    <div class="les-info">
+      <div class="les-num">Les 23</div>
+      <div class="les-title">Andermans analyse gebruiken</div>
+      <div class="les-desc">Wat doe je met tips van anderen?</div>
+    </div>
+    <div class="les-status"><span class="badge badge-locked">🔒</span></div>
+  </div>
+
+</div>
+
+<!-- THEMA: MACRO -->
+<div id="thema-macro" class="thema-content">
+  <div class="coming-soon">
+    <div class="big">🌍</div>
+    <p><strong>Macro-economie</strong> komt binnenkort.<br><br>
+    Onderwerpen die hier komen: rente, inflatie, centrale banken, geopolitiek en hoe dat allemaal de markt beïnvloedt.</p>
+  </div>
+</div>
+
+<!-- THEMA: BEGRIPPEN -->
+<div id="thema-begrippen" class="thema-content">
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" placeholder="Zoek een begrip..." oninput="filterBegrippen(this.value)">
+  </div>
+
+  <div class="filter-pills">
+    <button class="filter-pill active" onclick="filterCat('all', this)">Alles</button>
+    <button class="filter-pill" onclick="filterCat('order', this)">Ordertypen</button>
+    <button class="filter-pill" onclick="filterCat('markt', this)">Marktrichting</button>
+    <button class="filter-pill" onclick="filterCat('kopen', this)">Kopen</button>
+    <button class="filter-pill" onclick="filterCat('ta', this)">Technische analyse</button>
+    <button class="filter-pill" onclick="filterCat('psycho', this)">Mindset</button>
+  </div>
+
+  <div class="begrip-grid" id="begrip-grid">
+
+    <div class="begrip-card" data-cat="order" data-naam="limietorder" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Limietorder</span>
+        <span class="begrip-cat cat-order">Ordertype</span>
+      </div>
+      <div class="begrip-uitleg">Je stelt een prijs in waarop je automatisch koopt. Je exchange koopt pas als de prijs dat niveau bereikt. Handig als je niet de hele dag naar je scherm wil staren.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="order" data-naam="marktorder" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Marktorder</span>
+        <span class="begrip-cat cat-order">Ordertype</span>
+      </div>
+      <div class="begrip-uitleg">Je koopt direct tegen de huidige marktprijs. Snel, maar je hebt geen controle over de exacte prijs.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="order" data-naam="stop-loss" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Stop-loss</span>
+        <span class="begrip-cat cat-order">Ordertype</span>
+      </div>
+      <div class="begrip-uitleg">Automatische verkooporder als de prijs te ver daalt. Beschermt je tegen grote verliezen. Voorbeeld: je koopt op €1.730 en stelt stop-loss in op €1.590 — dan verkoopt de exchange automatisch als die prijs bereikt wordt.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="markt" data-naam="bullmarkt" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Bullmarkt</span>
+        <span class="begrip-cat cat-markt">Marktrichting</span>
+      </div>
+      <div class="begrip-uitleg">Een markt die structureel stijgt. Positief sentiment, kopers zijn dominant. Historisch gezien volgt een bullmarkt bij Bitcoin na een halvering.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="markt" data-naam="bearmarkt" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Bearmarkt</span>
+        <span class="begrip-cat cat-markt">Marktrichting</span>
+      </div>
+      <div class="begrip-uitleg">Een markt die structureel daalt. Negatief sentiment, verkopers zijn dominant. Kan maanden tot jaren duren.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="markt" data-naam="bullish" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Bullish</span>
+        <span class="begrip-cat cat-markt">Marktrichting</span>
+      </div>
+      <div class="begrip-uitleg">De verwachting of het signaal dat een prijs gaat stijgen. "Zipp is bullish op BTC" betekent dat hij verwacht dat BTC omhoog gaat.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="markt" data-naam="bearish" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Bearish</span>
+        <span class="begrip-cat cat-markt">Marktrichting</span>
+      </div>
+      <div class="begrip-uitleg">De verwachting of het signaal dat een prijs gaat dalen. Een bearish kaarsje, signaal of analyse wijst op een mogelijke daling.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="kopen" data-naam="spot kopen" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Spot kopen</span>
+        <span class="begrip-cat cat-kopen">Kopen</span>
+      </div>
+      <div class="begrip-uitleg">Je koopt echt de munt en bezit die daadwerkelijk. Tegenstelling van leverage trading waarbij je alleen speculeert op de prijs zonder de munt te bezitten.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="kopen" data-naam="hodlen" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Hodlen</span>
+        <span class="begrip-cat cat-kopen">Kopen</span>
+      </div>
+      <div class="begrip-uitleg">Kopen en langdurig vasthouden, ongeacht schommelingen. Komt van een typfout van "hold" die viral ging. Strategie voor lange termijn beleggers.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="kopen" data-naam="dca" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">DCA</span>
+        <span class="begrip-cat cat-kopen">Kopen</span>
+      </div>
+      <div class="begrip-uitleg">Dollar Cost Averaging — regelmatig een vast bedrag investeren ongeacht de prijs. Bijvoorbeeld elke maand €100 kopen. Spreidt het risico van een slechte instaptiming.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="kopen" data-naam="long" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Long</span>
+        <span class="begrip-cat cat-kopen">Kopen</span>
+      </div>
+      <div class="begrip-uitleg">Het platform leent je geld om een munt te kopen. Je speculeert op een stijging. Als de prijs stijgt verdien je, als hij daalt verlies je. Je bezit de munt niet echt — je hebt een contract met het platform.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="kopen" data-naam="short" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Short</span>
+        <span class="begrip-cat cat-kopen">Kopen</span>
+      </div>
+      <div class="begrip-uitleg">Het platform leent je een munt die je direct verkoopt. Je speculeert op een daling. Je koopt later goedkoper terug en geeft de munt terug. Het verschil is jouw winst — of verlies.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="kopen" data-naam="leverage" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Leverage</span>
+        <span class="begrip-cat cat-kopen">Kopen</span>
+      </div>
+      <div class="begrip-uitleg">Met geleend geld handelen. 10x leverage betekent: je hebt €1.000 maar handelt alsof je €10.000 hebt. Winst en verlies worden beide 10x groter. Zeer risicovol voor beginners.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="steun" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Steun</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Een prijsniveau waar de markt historisch stopt met dalen en omhoog keert. Kopers komen op dit niveau terug. Hoe vaker het houdt, hoe sterker het niveau.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="weerstand" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Weerstand</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Een prijsniveau waar de markt historisch stopt met stijgen en terugzakt. Verkopers komen op dit niveau terug. BTC heeft weerstand rond $72.000.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="rsi" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">RSI</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Relative Strength Index — een getal tussen 0 en 100. Boven 70 = overbought (te veel gestegen, mogelijk daling op komst). Onder 30 = oversold (te veel gedaald, mogelijk herstel op komst).</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="macd" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">MACD</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Moving Average Convergence Divergence — meet of een trend versnelt of vertraagt. Twee lijnen die elkaar kruisen: omhoog = bullish signaal, omlaag = bearish signaal.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="swing low" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Swing low</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Een lokaal dieptepunt op de grafiek — een dal met aan beide kanten hogere punten. Traders gebruiken dit als referentiepunt. Als de prijs hier naartoe daalt, letten ze op de reactie.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="sfp" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">SFP</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Swing Failure Pattern — prijs daalt even onder een swing low maar keert daarna krachtig terug. Een valstrik voor short traders. Bullish signaal. Zipp zag dit vandaag bij BTC.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="marktstructuurshift" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Marktstructuurshift</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">Het moment waarop de markt van richting verandert — van bearish naar bullish of andersom. Een bevestigd signaal dat de trend is gekeerd.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="bearish retest" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Bearish retest</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">De prijs stijgt even terug naar een eerder gebroken niveau maar gaat daarna weer verder omlaag. Een valse hoop — steun is nu weerstand geworden.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="ta" data-naam="horizontale range" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Horizontale range</span>
+        <span class="begrip-cat cat-ta">Technische analyse</span>
+      </div>
+      <div class="begrip-uitleg">De prijs beweegt zijwaarts tussen steun en weerstand. Geen duidelijke trend omhoog of omlaag. BTC zit momenteel in een range tussen ~$65.000 en ~$72.000.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="psycho" data-naam="confirmation bias" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Confirmation bias</span>
+        <span class="begrip-cat cat-psycho">Mindset</span>
+      </div>
+      <div class="begrip-uitleg">Je ziet alleen informatie die je eigen mening bevestigt. Gevaarlijk bij marktanalyse — je tekent diagonale lijnen die jouw verwachting bevestigen maar misschien niet kloppen.</div>
+    </div>
+
+    <div class="begrip-card" data-cat="psycho" data-naam="risk reward" onclick="toggleBegrip(this)">
+      <div class="begrip-top">
+        <span class="begrip-naam">Risk/reward</span>
+        <span class="begrip-cat cat-psycho">Mindset</span>
+      </div>
+      <div class="begrip-uitleg">De verhouding tussen potentieel verlies en potentiële winst. Een goede risk/reward is minimaal 1:2 — je riskeert €100 om €200 te verdienen. Als de verhouding slecht is, is het geen goede trade.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- THEMA: MEER -->
+<div id="thema-meer" class="thema-content">
+  <div class="coming-soon">
+    <div class="big">＋</div>
+    <p><strong>Meer thema's</strong> worden hier toegevoegd.<br><br>
+    Ideeën: psychologie van beleggen, belasting & crypto, on-chain analyse, fundamentele analyse.</p>
+  </div>
+</div>
+
+<script>
+  // Datum
+  const now = new Date();
+  document.getElementById('dateDisplay').innerHTML =
+    now.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+  // Thema tabs
+  function showThema(id, el) {
+    document.querySelectorAll('.thema-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.thema-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('thema-' + id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // Begrip toggle
+  function toggleBegrip(el) {
+    const uitleg = el.querySelector('.begrip-uitleg');
+    const isOpen = uitleg.classList.contains('visible');
+    document.querySelectorAll('.begrip-uitleg').forEach(u => u.classList.remove('visible'));
+    if (!isOpen) uitleg.classList.add('visible');
+  }
+
+  // Filter op categorie
+  function filterCat(cat, el) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.begrip-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'block' : 'none';
+    });
+  }
+
+  // Zoeken
+  function filterBegrippen(val) {
+    const q = val.toLowerCase();
+    document.querySelectorAll('.begrip-card').forEach(card => {
+      card.style.display = card.dataset.naam.includes(q) ? 'block' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>

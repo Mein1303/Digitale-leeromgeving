@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marktanalyse — Les 1: Kaarsjes</title>
+<style>
+  
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e1a;
+    color: #e8eaf6;
+    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: #7986cb;
+    font-size: 0.85rem;
+    margin-bottom: 28px;
+    font-family: monospace;
+  }
+
+  .section {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #90caf9;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: monospace;
+  }
+
+  /* CANDLE DIAGRAM */
+  .candle-diagram {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .candle-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .candle-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: monospace;
+  }
+
+  .candle-svg-wrap {
+    position: relative;
+  }
+
+  /* LABELS */
+  .label-box {
+    background: #1e2a45;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 6px 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #cfd8dc;
+  }
+
+  .label-box .tag {
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  .green { color: #66bb6a; }
+  .red { color: #ef5350; }
+  .yellow { color: #ffd54f; }
+  .blue { color: #90caf9; }
+
+  /* INTERACTIVE SECTION */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #1e2a45;
+    background: #0a0e1a;
+    color: #7986cb;
+    font-family: monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab.active, .tab:hover {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .example-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    background: #0a0e1a;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #1e2a45;
+  }
+
+  .example-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #cfd8dc;
+  }
+
+  .example-text strong {
+    color: #fff;
+  }
+
+  /* MINI CHART */
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    padding: 12px;
+    background: #0a0e1a;
+    border-radius: 10px;
+    border: 1px solid #1e2a45;
+    margin-top: 12px;
+    justify-content: center;
+  }
+
+  .quiz-btn {
+    background: #1a237e;
+    border: 1px solid #3949ab;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .quiz-btn:hover { background: #283593; }
+
+  .quiz-result {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  .quiz-result.correct { background: #1b5e20; color: #a5d6a7; border: 1px solid #2e7d32; }
+  .quiz-result.wrong { background: #b71c1c; color: #ffcdd2; border: 1px solid #c62828; }
+
+  .highlight-box {
+    background: #0d1b2a;
+    border-left: 3px solid #ffd54f;
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #cfd8dc;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<h1>📈 Marktanalyse · Les 1</div><h1>🕯️ Wat is een kaarsje?</h1>
+<p class="subtitle">De basis van elke grafiek — aandelen, crypto, forex</p>
+
+<!-- SECTION 1: BASIC CANDLE -->
+<div class="section">
+  <h2>Het kaarsje uitgelegd</h2>
+  <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:16px; line-height:1.6;">
+    Een grafiek bestaat uit tientallen kleine "kaarsjes". Elk kaarsje toont wat de prijs deed in een bepaalde periode — bijvoorbeeld 1 uur of 12 uur.
+  </p>
+
+  <div class="candle-diagram">
+
+    <!-- GROEN KAARSJE -->
+    <div class="candle-wrap">
+      <span class="candle-label green">GROEN = stijging</span>
+      <svg width="80" height="200" viewBox="0 0 80 200">
+        <!-- top wick -->
+        <line x1="40" y1="10" x2="40" y2="50" stroke="#66bb6a" stroke-width="2"/>
+        <!-- body -->
+        <rect x="20" y="50" width="40" height="100" fill="#66bb6a" rx="3"/>
+        <!-- bottom wick -->
+        <line x1="40" y1="150" x2="40" y2="190" stroke="#66bb6a" stroke-width="2"/>
+        <!-- labels -->
+        <text x="68" y="14" fill="#ffd54f" font-size="9" font-family="monospace">Hoogste punt</text>
+        <text x="68" y="54" fill="#90caf9" font-size="9" font-family="monospace">Sluitprijs</text>
+        <text x="68" y="148" fill="#90caf9" font-size="9" font-family="monospace">Openingsprijs</text>
+        <text x="68" y="190" fill="#ffd54f" font-size="9" font-family="monospace">Laagste punt</text>
+        <!-- arrows -->
+        <line x1="66" y1="13" x2="50" y2="13" stroke="#ffd54f" stroke-width="1" marker-end="url(#arr)"/>
+        <line x1="66" y1="52" x2="62" y2="52" stroke="#90caf9" stroke-width="1"/>
+        <line x1="66" y1="147" x2="62" y2="147" stroke="#90caf9" stroke-width="1"/>
+        <line x1="66" y1="189" x2="50" y2="189" stroke="#ffd54f" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <!-- ROOD KAARSJE -->
+    <div class="candle-wrap">
+      <span class="candle-label red">ROOD = daling</span>
+      <svg width="80" height="200" viewBox="0 0 80 200">
+        <line x1="40" y1="10" x2="40" y2="50" stroke="#ef5350" stroke-width="2"/>
+        <rect x="20" y="50" width="40" height="100" fill="#ef5350" rx="3"/>
+        <line x1="40" y1="150" x2="40" y2="190" stroke="#ef5350" stroke-width="2"/>
+        <text x="68" y="14" fill="#ffd54f" font-size="9" font-family="monospace">Hoogste punt</text>
+        <text x="68" y="54" fill="#90caf9" font-size="9" font-family="monospace">Openingsprijs</text>
+        <text x="68" y="148" fill="#90caf9" font-size="9" font-family="monospace">Sluitprijs</text>
+        <text x="68" y="190" fill="#ffd54f" font-size="9" font-family="monospace">Laagste punt</text>
+      </svg>
+    </div>
+
+  </div>
+
+  <div class="highlight-box">
+    💡 <strong>Onthoud:</strong> Het dikke blok = het verschil tussen opening en sluiting. De dunne lijntjes boven en onder noem je <span class="yellow">wicks</span> of <span class="yellow">lontjes</span> — dat is hoe ver de prijs uitschoot maar terugkwam.
+  </div>
+</div>
+
+<!-- SECTION 2: VOORBEELDEN -->
+<div class="section">
+  <h2>Voorbeelden in de praktijk</h2>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('t1', this)">Lang groen</button>
+    <button class="tab" onclick="showTab('t2', this)">Lang rood</button>
+    <button class="tab" onclick="showTab('t3', this)">Lange wick</button>
+    <button class="tab" onclick="showTab('t4', this)">Kleine body</button>
+  </div>
+
+  <div id="t1" class="tab-content active">
+    <div class="example-row">
+      <svg width="40" height="100" viewBox="0 0 40 100">
+        <line x1="20" y1="5" x2="20" y2="15" stroke="#66bb6a" stroke-width="2"/>
+        <rect x="8" y="15" width="24" height="70" fill="#66bb6a" rx="2"/>
+        <line x1="20" y1="85" x2="20" y2="95" stroke="#66bb6a" stroke-width="2"/>
+      </svg>
+      <div class="example-text">
+        <strong>Lang groen kaarsje</strong><br>
+        De prijs steeg flink in deze periode. Kopers waren duidelijk sterker dan verkopers. Een bullish signaal.
+      </div>
+    </div>
+  </div>
+
+  <div id="t2" class="tab-content">
+    <div class="example-row">
+      <svg width="40" height="100" viewBox="0 0 40 100">
+        <line x1="20" y1="5" x2="20" y2="15" stroke="#ef5350" stroke-width="2"/>
+        <rect x="8" y="15" width="24" height="70" fill="#ef5350" rx="2"/>
+        <line x1="20" y1="85" x2="20" y2="95" stroke="#ef5350" stroke-width="2"/>
+      </svg>
+      <div class="example-text">
+        <strong>Lang rood kaarsje</strong><br>
+        De prijs daalde flink. Verkopers waren dominant. Een bearish signaal. Dit zag je vandaag bij BTC.
+      </div>
+    </div>
+  </div>
+
+  <div id="t3" class="tab-content">
+    <div class="example-row">
+      <svg width="40" height="100" viewBox="0 0 40 100">
+        <line x1="20" y1="5" x2="20" y2="55" stroke="#66bb6a" stroke-width="2"/>
+        <rect x="8" y="55" width="24" height="20" fill="#66bb6a" rx="2"/>
+        <line x1="20" y1="75" x2="20" y2="85" stroke="#66bb6a" stroke-width="2"/>
+      </svg>
+      <div class="example-text">
+        <strong>Lange wick bovenaan</strong><br>
+        De prijs schoot hoog omhoog maar zakte terug. Verkopers kwamen hard terug. Dit is een waarschuwingssignaal — de hoge prijs werd niet vastgehouden.
+      </div>
+    </div>
+  </div>
+
+  <div id="t4" class="tab-content">
+    <div class="example-row">
+      <svg width="40" height="100" viewBox="0 0 40 100">
+        <line x1="20" y1="20" x2="20" y2="45" stroke="#ffd54f" stroke-width="2"/>
+        <rect x="8" y="45" width="24" height="10" fill="#ffd54f" rx="2"/>
+        <line x1="20" y1="55" x2="20" y2="80" stroke="#ffd54f" stroke-width="2"/>
+      </svg>
+      <div class="example-text">
+        <strong>Kleine body (Doji)</strong><br>
+        Opening en sluiting bijna gelijk. Kopers en verkopers waren in balans. Niemand won. Dit signaleert <strong>twijfel</strong> in de markt — vaak een keerpunt.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: MINI CHART -->
+<div class="section">
+  <h2>Zo ziet een echte grafiek eruit</h2>
+  <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:12px;">Een reeks kaarsjes naast elkaar vertelt het verhaal van de markt:</p>
+
+  <div class="mini-chart">
+    <svg width="300" height="120" viewBox="0 0 300 120">
+      <!-- candle 1 green -->
+      <line x1="20" y1="30" x2="20" y2="40" stroke="#66bb6a" stroke-width="1.5"/>
+      <rect x="14" y="40" width="12" height="40" fill="#66bb6a" rx="1"/>
+      <line x1="20" y1="80" x2="20" y2="90" stroke="#66bb6a" stroke-width="1.5"/>
+      <!-- candle 2 green -->
+      <line x1="45" y1="20" x2="45" y2="30" stroke="#66bb6a" stroke-width="1.5"/>
+      <rect x="39" y="30" width="12" height="45" fill="#66bb6a" rx="1"/>
+      <line x1="45" y1="75" x2="45" y2="85" stroke="#66bb6a" stroke-width="1.5"/>
+      <!-- candle 3 red -->
+      <line x1="70" y1="22" x2="70" y2="32" stroke="#ef5350" stroke-width="1.5"/>
+      <rect x="64" y="32" width="12" height="35" fill="#ef5350" rx="1"/>
+      <line x1="70" y1="67" x2="70" y2="80" stroke="#ef5350" stroke-width="1.5"/>
+      <!-- candle 4 red -->
+      <line x1="95" y1="35" x2="95" y2="45" stroke="#ef5350" stroke-width="1.5"/>
+      <rect x="89" y="45" width="12" height="40" fill="#ef5350" rx="1"/>
+      <line x1="95" y1="85" x2="95" y2="95" stroke="#ef5350" stroke-width="1.5"/>
+      <!-- candle 5 small -->
+      <line x1="120" y1="70" x2="120" y2="78" stroke="#ffd54f" stroke-width="1.5"/>
+      <rect x="114" y="78" width="12" height="8" fill="#ffd54f" rx="1"/>
+      <line x1="120" y1="86" x2="120" y2="98" stroke="#ffd54f" stroke-width="1.5"/>
+      <!-- candle 6 green -->
+      <line x1="145" y1="55" x2="145" y2="65" stroke="#66bb6a" stroke-width="1.5"/>
+      <rect x="139" y="65" width="12" height="35" fill="#66bb6a" rx="1"/>
+      <line x1="145" y1="100" x2="145" y2="108" stroke="#66bb6a" stroke-width="1.5"/>
+      <!-- candle 7 big green -->
+      <line x1="170" y1="30" x2="170" y2="40" stroke="#66bb6a" stroke-width="1.5"/>
+      <rect x="164" y="40" width="12" height="55" fill="#66bb6a" rx="1"/>
+      <line x1="170" y1="95" x2="170" y2="105" stroke="#66bb6a" stroke-width="1.5"/>
+      <!-- candle 8 green -->
+      <line x1="195" y1="18" x2="195" y2="28" stroke="#66bb6a" stroke-width="1.5"/>
+      <rect x="189" y="28" width="12" height="40" fill="#66bb6a" rx="1"/>
+      <line x1="195" y1="68" x2="195" y2="78" stroke="#66bb6a" stroke-width="1.5"/>
+      <!-- labels -->
+      <text x="10" y="115" fill="#ef5350" font-size="8" font-family="monospace">daling</text>
+      <text x="110" y="115" fill="#ffd54f" font-size="8" font-family="monospace">twijfel</text>
+      <text x="155" y="115" fill="#66bb6a" font-size="8" font-family="monospace">stijging</text>
+    </svg>
+  </div>
+
+  <div class="highlight-box">
+    💡 Lees van links naar rechts — elk kaarsje is een nieuw moment in de tijd. Samen vertellen ze het verhaal: eerst stijging, dan daling, dan twijfel, dan weer stijging.
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="section">
+  <h2>🧠 Test jezelf</h2>
+  <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:14px;">Wat betekent een rood kaarsje met een lange wick onderaan?</p>
+
+  <button class="quiz-btn" onclick="answer('a')">A) De prijs daalde hard en bleef laag</button>
+  <button class="quiz-btn" onclick="answer('b')">B) De prijs daalde even maar kopers kwamen terug — bullish signaal</button>
+  <button class="quiz-btn" onclick="answer('c')">C) De prijs steeg de hele periode</button>
+
+  <div id="quiz-result" class="quiz-result"></div>
+</div>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+function answer(choice) {
+  const result = document.getElementById('quiz-result');
+  result.style.display = 'block';
+  if (choice === 'b') {
+    result.className = 'quiz-result correct';
+    result.innerHTML = '✅ Correct! De lange wick onderaan betekent dat de prijs ver daalde maar kopers kwamen terug en duwden de prijs omhoog. Dit is een bullish signaal — precies wat zipp vanmorgen zag bij BTC!';
+  } else {
+    result.className = 'quiz-result wrong';
+    result.innerHTML = '❌ Niet helemaal. Een lange wick onderaan betekent juist dat kopers terugkwamen na een daling. Het antwoord is B.';
+  }
+}
+</script>
+
+</body>
+</html>
