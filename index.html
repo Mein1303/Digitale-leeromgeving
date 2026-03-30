@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mijn Leeromgeving</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e1a;
+    color: #e8eaf6;
+    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* NAVIGATIE BALK */
+  .navbar {
+    background: #0d1220;
+    border-bottom: 1px solid #1e2a45;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-back {
+    background: #1a237e;
+    border: none;
+    color: #90caf9;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: none;
+    transition: all 0.2s;
+  }
+
+  .nav-back:hover { background: #283593; }
+
+  .nav-logo {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .nav-logo span { color: #90caf9; }
+
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-prev, .nav-next {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    color: #7986cb;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: none;
+    transition: all 0.2s;
+    font-family: monospace;
+  }
+
+  .nav-prev:hover, .nav-next:hover {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  .nav-les-indicator {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    display: none;
+  }
+
+  /* PAGINA WRAPPER */
+  .page { display: none; padding: 24px 16px; }
+  .page.active { display: block; }
+
+  /* DASHBOARD STIJLEN */
+  .module-tag {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #7986cb;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    color: #7986cb;
+    font-size: 0.85rem;
+    margin-bottom: 28px;
+    font-family: monospace;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .logo span { color: #90caf9; }
+
+  .date {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    text-align: right;
+  }
+
+  .tagline {
+    font-size: 0.82rem;
+    color: #546e7a;
+    font-family: monospace;
+    margin-bottom: 24px;
+  }
+
+  .progress-wrap {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .progress-label { font-size: 0.78rem; color: #90a4ae; }
+  .progress-count { font-family: monospace; font-size: 0.78rem; color: #90caf9; }
+
+  .progress-bar {
+    background: #1e2a45;
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: linear-gradient(90deg, #3949ab, #90caf9);
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .thema-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .thema-tab {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid #1e2a45;
+    background: #131929;
+    color: #7986cb;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .thema-tab.active {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  .thema-content { display: none; }
+  .thema-content.active { display: block; }
+
+  .module-header {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    padding-left: 4px;
+  }
+
+  .module-header:first-of-type { margin-top: 0; }
+
+  .les-card {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .les-card:hover { border-color: #3949ab; background: #0d1b35; }
+
+  .les-card.locked {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .les-card.locked:hover {
+    border-color: #1e2a45;
+    background: #131929;
+  }
+
+  .les-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .les-icon.done { background: #1b3a1b; }
+  .les-icon.active { background: #1a237e; }
+  .les-icon.locked { background: #1e2a45; }
+
+  .les-info { flex: 1; }
+  .les-num { font-family: monospace; font-size: 0.65rem; color: #546e7a; margin-bottom: 2px; }
+  .les-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+  .les-desc { font-size: 0.75rem; color: #78909c; }
+
+  .badge {
+    font-family: monospace;
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .badge-done { background: #1b3a1b; color: #81c784; }
+  .badge-active { background: #1a237e; color: #90caf9; }
+  .badge-locked { background: #1e2a45; color: #546e7a; }
+
+  .coming-soon {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #546e7a;
+  }
+
+  .coming-soon .big { font-size: 2rem; margin-bottom: 10px; }
+  .coming-soon p { font-size: 0.85rem; line-height: 1.6; }
+
+  /* LES STIJLEN */
+  .section {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #90caf9;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: monospace;
+  }
+
+  .intro-text {
+    font-size: 0.88rem;
+    color: #90a4ae;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .highlight-box {
+    background: #0d1b2a;
+    border-left: 3px solid #ffd54f;
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #cfd8dc;
+    line-height: 1.6;
+  }
+
+  .highlight-box.green { border-left-color: #66bb6a; }
+  .highlight-box.red { border-left-color: #ef5350; }
+  .highlight-box.blue { border-left-color: #90caf9; }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #1e2a45;
+    background: #0a0e1a;
+    color: #7986cb;
+    font-family: monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab.active, .tab:hover {
+    background: #1a237e;
+    border-color: #3949ab;
+    color: #fff;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .chart-wrap {
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+  }
+
+  .quiz-btn {
+    background: #1a237e;
+    border: 1px solid #3949ab;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+  }
+
+  .quiz-btn:hover { background: #283593; }
+
+  .quiz-result {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .quiz-result.correct { background: #1b5e20; color: #a5d6a7; border: 1px solid #2e7d32; }
+  .quiz-result.wrong { background: #b71c1c; color: #ffcdd2; border: 1px solid #c62828; }
+
+  .two-col { display: flex; gap: 12px; margin-bottom: 12px; }
+
+  .col-card {
+    flex: 1;
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .col-card .big { font-size: 1.8rem; margin-bottom: 6px; }
+  .col-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+  .col-card p { font-size: 0.78rem; color: #78909c; line-height: 1.5; }
+
+  .step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+
+  .step-num {
+    background: #1a237e;
+    color: #90caf9;
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-text { font-size: 0.85rem; color: #cfd8dc; line-height: 1.6; padding-top: 4px; }
+
+  .candle-compare {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 20px 0 10px;
+    flex-wrap: wrap;
+  }
+
+  .candle-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .candle-col-label { font-family: monospace; font-size: 0.65rem; color: #546e7a; text-align: center; }
+
+  .ladder { display: flex; flex-direction: column; gap: 6px; }
+  .ladder-group { margin-bottom: 8px; }
+
+  .ladder-group-title {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #546e7a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    padding-left: 4px;
+  }
+
+  .ladder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ladder-item:hover { border-color: #3949ab; background: #0d1b35; }
+
+  .ladder-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ladder-name { font-family: monospace; font-size: 0.8rem; color: #fff; min-width: 60px; }
+  .ladder-desc { font-size: 0.8rem; color: #78909c; flex: 1; }
+
+  .ladder-badge {
+    font-family: monospace;
+    font-size: 0.65rem;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #1a237e;
+    color: #90caf9;
+  }
+
+  .ladder-badge.bert { background: #1b3a1b; color: #81c784; }
+  .ladder-badge.zipp { background: #3e1a1a; color: #ef9a9a; }
+
+  .detail-panel {
+    background: #0d1b35;
+    border: 1px solid #3949ab;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 6px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #cfd8dc;
+    display: none;
+  }
+
+  .detail-panel.visible { display: block; }
+
+  .nav-pills { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+  .pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #1e2a45;
+    background: #0a0e1a;
+    color: #7986cb;
+    font-family: monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pill.active, .pill:hover { background: #1a237e; border-color: #3949ab; color: #fff; }
+  .pill-content { display: none; }
+  .pill-content.active { display: block; }
+
+  .example-market {
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    color: #cfd8dc;
+    line-height: 1.6;
+  }
+
+  .market-tag {
+    font-family: monospace;
+    font-size: 0.65rem;
+    padding: 3px 7px;
+    border-radius: 4px;
+    margin-right: 6px;
+    font-weight: 700;
+  }
+
+  .tag-crypto { background: #1a237e; color: #90caf9; }
+  .tag-aandelen { background: #1b3a1b; color: #81c784; }
+  .tag-forex { background: #3e2c00; color: #ffd54f; }
+
+  /* BEGRIPPEN */
+  .search-wrap { position: relative; margin-bottom: 14px; }
+
+  .search-input {
+    width: 100%;
+    background: #0a0e1a;
+    border: 1px solid #1e2a45;
+    border-radius: 10px;
+    padding: 10px 14px 10px 36px;
+    color: #e8eaf6;
+    font-size: 0.85rem;
+    font-family: system-ui, sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: #3949ab; }
+  .search-input::placeholder { color: #546e7a; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #546e7a; font-size: 0.85rem; }
+
+  .filter-pills { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+
+  .filter-pill {
+    padding: 5px 10px;
+    border-radius: 16px;
+    border: 1px solid #1e2a45;
+    background: #0a0e1a;
+    color: #7986cb;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: monospace;
+  }
+
+  .filter-pill.active, .filter-pill:hover { background: #1a237e; border-color: #3949ab; color: #fff; }
+
+  .begrip-card {
+    background: #131929;
+    border: 1px solid #1e2a45;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+  }
+
+  .begrip-card:hover { border-color: #3949ab; }
+
+  .begrip-top { display: flex; justify-content: space-between; align-items: center; }
+  .begrip-naam { font-weight: 700; font-size: 0.88rem; color: #fff; }
+
+  .begrip-cat {
+    font-family: monospace;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .cat-order { background: #1a237e; color: #90caf9; }
+  .cat-markt { background: #1b3a1b; color: #81c784; }
+  .cat-kopen { background: #3e2c00; color: #ffd54f; }
+  .cat-ta { background: #2d1b4e; color: #ce93d8; }
+  .cat-psycho { background: #3e1a1a; color: #ef9a9a; }
+
+  .begrip-uitleg { font-size: 0.8rem; color: #78909c; margin-top: 8px; line-height: 1.5; display: none; }
+  .begrip-uitleg.visible { display: block; }
+
+  /* LES NAVIGATIE ONDERAAN */
+  .les-nav-bottom {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  .les-nav-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #1e2a45;
+    background: #131929;
+    color: #7986cb;
+    font-family: monospace;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .les-nav-btn:hover { background: #1a237e; border-color: #3949ab; color: #fff; }
+  .les-nav-btn.primary { background: #1a237e; border-color: #3949ab; color: #fff; }
+  .les-nav-btn.primary:hover { background: #283593; }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATIE BALK -->
+<div class="navbar">
+  <div class="navbar-left">
+    <button class="nav-back" id="navBack" onclick="goHome()">← Home</button>
+    <div class="nav-logo" onclick="goHome()">Mijn<span>Leeromgeving</span></div>
+  </div>
+  <div class="navbar-right">
+    <button class="nav-prev" id="navPrev">← Vorige</button>
+    <span class="nav-les-indicator" id="navIndicator"></span>
+    <button class="nav-next" id="navNext">Volgende →</button>
+  </div>
+</div>
+
+<!-- ==================== HOOFDPAGINA ==================== -->
+<div id="page-home" class="page active">
+
+  <div class="header-top">
+    <div class="logo">Mijn<span>Leeromgeving</span></div>
+    <div class="date" id="dateDisplay"></div>
+  </div>
+  <div class="tagline">persoonlijk · stap voor stap · altijd uitbreidbaar</div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">Voortgang marktanalyse</span>
+      <span class="progress-count">4 / 23 lessen</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 17%"></div>
+    </div>
+  </div>
+
+  <div class="thema-tabs">
+    <button class="thema-tab active" onclick="showThema('markt', this)">📈 Marktanalyse</button>
+    <button class="thema-tab" onclick="showThema('macro', this)">🌍 Macro-economie</button>
+    <button class="thema-tab" onclick="showThema('begrippen', this)">📚 Begrippen</button>
+    <button class="thema-tab" onclick="showThema('meer', this)">＋ Meer</button>
+  </div>
+
+  <!-- MARKTANALYSE -->
+  <div id="thema-markt" class="thema-content active">
+
+    <div class="module-header">📊 Module 1 — De basis van een grafiek</div>
+
+    <div class="les-card" onclick="goToLes('les1', 1)">
+      <div class="les-icon done">🕯️</div>
+      <div class="les-info">
+        <div class="les-num">Les 1</div>
+        <div class="les-title">Candlesticks</div>
+        <div class="les-desc">Wat vertelt één candlestick? Groen, rood, wicks</div>
+      </div>
+      <span class="badge badge-done">✓ klaar</span>
+    </div>
+
+    <div class="les-card" onclick="goToLes('les2', 2)">
+      <div class="les-icon done">⏱️</div>
+      <div class="les-info">
+        <div class="les-num">Les 2</div>
+        <div class="les-title">Tijdframes</div>
+        <div class="les-desc">Van 1 minuut tot 4-jaar cyclus</div>
+      </div>
+      <span class="badge badge-done">✓ klaar</span>
+    </div>
+
+    <div class="les-card" onclick="goToLes('les3', 3)">
+      <div class="les-icon done">🧱</div>
+      <div class="les-info">
+        <div class="les-num">Les 3</div>
+        <div class="les-title">Steun & Weerstand</div>
+        <div class="les-desc">De basis van elke grafiekanalyse</div>
+      </div>
+      <span class="badge badge-done">✓ klaar</span>
+    </div>
+
+    <div class="les-card" onclick="goToLes('les4', 4)">
+      <div class="les-icon done">📖</div>
+      <div class="les-info">
+        <div class="les-num">Les 4</div>
+        <div class="les-title">Grafiek lezen</div>
+        <div class="les-desc">Van links naar rechts — trend herkennen</div>
+      </div>
+      <span class="badge badge-done">✓ klaar</span>
+    </div>
+
+    <div class="module-header">📊 Module 2 — Prijsstructuur</div>
+
+    <div class="les-card locked">
+      <div class="les-icon active">📉</div>
+      <div class="les-info">
+        <div class="les-num">Les 5</div>
+        <div class="les-title">Swing low & Swing high</div>
+        <div class="les-desc">Dieptepunten en toppen herkennen</div>
+      </div>
+      <span class="badge badge-active">→ volgende</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">↔️</div>
+      <div class="les-info">
+        <div class="les-num">Les 6</div>
+        <div class="les-title">Horizontale range</div>
+        <div class="les-desc">Zijwaartse markt herkennen</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">📈</div>
+      <div class="les-info">
+        <div class="les-num">Les 7</div>
+        <div class="les-title">Trend</div>
+        <div class="les-desc">Stijgend, dalend of zijwaarts</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="module-header">📊 Module 3 — Marktgedrag</div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">🐂</div>
+      <div class="les-info">
+        <div class="les-num">Les 8</div>
+        <div class="les-title">Bull & bearmarkt</div>
+        <div class="les-desc">Grote marktcycli begrijpen</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">🔄</div>
+      <div class="les-info">
+        <div class="les-num">Les 9</div>
+        <div class="les-title">Marktstructuurshift</div>
+        <div class="les-desc">Wanneer verandert de trend?</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">↩️</div>
+      <div class="les-info">
+        <div class="les-num">Les 10</div>
+        <div class="les-title">Bearish retest</div>
+        <div class="les-desc">Valse stijging herkennen</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">🪤</div>
+      <div class="les-info">
+        <div class="les-num">Les 11</div>
+        <div class="les-title">SFP — Swing Failure Pattern</div>
+        <div class="les-desc">De valstrik voor short traders</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="module-header">📊 Module 4 — Indicatoren</div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">🔧</div>
+      <div class="les-info">
+        <div class="les-num">Les 12</div>
+        <div class="les-title">Wat is een indicator?</div>
+        <div class="les-desc">Leading vs lagging indicatoren</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">📊</div>
+      <div class="les-info">
+        <div class="les-num">Les 13</div>
+        <div class="les-title">RSI</div>
+        <div class="les-desc">Overbought & oversold herkennen</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">〰️</div>
+      <div class="les-info">
+        <div class="les-num">Les 14</div>
+        <div class="les-title">MACD</div>
+        <div class="les-desc">Trend en momentum meten</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="module-header">📊 Module 5 — Handelen</div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">📋</div>
+      <div class="les-info">
+        <div class="les-num">Les 15</div>
+        <div class="les-title">Ordertypen</div>
+        <div class="les-desc">Markt, limiet en stop-loss</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">💰</div>
+      <div class="les-info">
+        <div class="les-num">Les 16</div>
+        <div class="les-title">Spot kopen & hodlen</div>
+        <div class="les-desc">Lang vasthouden als strategie</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">🔁</div>
+      <div class="les-info">
+        <div class="les-num">Les 17</div>
+        <div class="les-title">DCA</div>
+        <div class="les-desc">Gespreid instappen</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">⚖️</div>
+      <div class="les-info">
+        <div class="les-num">Les 18</div>
+        <div class="les-title">Risk/reward</div>
+        <div class="les-desc">Risico en winst in balans</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">📐</div>
+      <div class="les-info">
+        <div class="les-num">Les 19</div>
+        <div class="les-title">Long & Short</div>
+        <div class="les-desc">Speculeren op stijging en daling</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">⚡</div>
+      <div class="les-info">
+        <div class="les-num">Les 20</div>
+        <div class="les-title">Leverage</div>
+        <div class="les-desc">Met geleend geld handelen</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="module-header">📊 Module 6 — Mindset</div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">🧠</div>
+      <div class="les-info">
+        <div class="les-num">Les 21</div>
+        <div class="les-title">Confirmation bias</div>
+        <div class="les-desc">Alleen zien wat je wil zien</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">😰</div>
+      <div class="les-info">
+        <div class="les-num">Les 22</div>
+        <div class="les-title">Emoties in de markt</div>
+        <div class="les-desc">Fear, greed en hoe je ermee omgaat</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+    <div class="les-card locked">
+      <div class="les-icon locked">👁️</div>
+      <div class="les-info">
+        <div class="les-num">Les 23</div>
+        <div class="les-title">Andermans analyse gebruiken</div>
+        <div class="les-desc">Wat doe je met tips van anderen?</div>
+      </div>
+      <span class="badge badge-locked">🔒</span>
+    </div>
+
+  </div>
+
+  <!-- MACRO -->
+  <div id="thema-macro" class="thema-content">
+    <div class="coming-soon">
+      <div class="big">🌍</div>
+      <p><strong>Macro-economie</strong> komt binnenkort.<br><br>Onderwerpen: rente, inflatie, centrale banken, geopolitiek.</p>
+    </div>
+  </div>
+
+  <!-- BEGRIPPEN -->
+  <div id="thema-begrippen" class="thema-content">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" placeholder="Zoek een begrip..." oninput="filterBegrippen(this.value)">
+    </div>
+    <div class="filter-pills">
+      <button class="filter-pill active" onclick="filterCat('all', this)">Alles</button>
+      <button class="filter-pill" onclick="filterCat('order', this)">Ordertypen</button>
+      <button class="filter-pill" onclick="filterCat('markt', this)">Marktrichting</button>
+      <button class="filter-pill" onclick="filterCat('kopen', this)">Kopen</button>
+      <button class="filter-pill" onclick="filterCat('ta', this)">Technische analyse</button>
+      <button class="filter-pill" onclick="filterCat('psycho', this)">Mindset</button>
+    </div>
+    <div id="begrip-grid">
+      <div class="begrip-card" data-cat="order" data-naam="limietorder" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Limietorder</span><span class="begrip-cat cat-order">Ordertype</span></div><div class="begrip-uitleg">Je stelt een prijs in waarop je automatisch koopt. Je exchange koopt pas als de prijs dat niveau bereikt.</div></div>
+      <div class="begrip-card" data-cat="order" data-naam="marktorder" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Marktorder</span><span class="begrip-cat cat-order">Ordertype</span></div><div class="begrip-uitleg">Je koopt direct tegen de huidige marktprijs. Snel maar geen controle over exacte prijs.</div></div>
+      <div class="begrip-card" data-cat="order" data-naam="stop-loss" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Stop-loss</span><span class="begrip-cat cat-order">Ordertype</span></div><div class="begrip-uitleg">Automatische verkooporder als de prijs te ver daalt. Beschermt tegen grote verliezen.</div></div>
+      <div class="begrip-card" data-cat="markt" data-naam="bullmarkt" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Bullmarkt</span><span class="begrip-cat cat-markt">Marktrichting</span></div><div class="begrip-uitleg">Een markt die structureel stijgt. Positief sentiment, kopers zijn dominant.</div></div>
+      <div class="begrip-card" data-cat="markt" data-naam="bearmarkt" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Bearmarkt</span><span class="begrip-cat cat-markt">Marktrichting</span></div><div class="begrip-uitleg">Een markt die structureel daalt. Negatief sentiment, verkopers zijn dominant.</div></div>
+      <div class="begrip-card" data-cat="markt" data-naam="bullish" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Bullish</span><span class="begrip-cat cat-markt">Marktrichting</span></div><div class="begrip-uitleg">De verwachting dat een prijs gaat stijgen.</div></div>
+      <div class="begrip-card" data-cat="markt" data-naam="bearish" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Bearish</span><span class="begrip-cat cat-markt">Marktrichting</span></div><div class="begrip-uitleg">De verwachting dat een prijs gaat dalen.</div></div>
+      <div class="begrip-card" data-cat="kopen" data-naam="spot kopen" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Spot kopen</span><span class="begrip-cat cat-kopen">Kopen</span></div><div class="begrip-uitleg">Je koopt echt de munt en bezit die daadwerkelijk.</div></div>
+      <div class="begrip-card" data-cat="kopen" data-naam="hodlen" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Hodlen</span><span class="begrip-cat cat-kopen">Kopen</span></div><div class="begrip-uitleg">Kopen en langdurig vasthouden, ongeacht schommelingen.</div></div>
+      <div class="begrip-card" data-cat="kopen" data-naam="dca" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">DCA</span><span class="begrip-cat cat-kopen">Kopen</span></div><div class="begrip-uitleg">Dollar Cost Averaging — regelmatig een vast bedrag investeren ongeacht de prijs.</div></div>
+      <div class="begrip-card" data-cat="kopen" data-naam="long" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Long</span><span class="begrip-cat cat-kopen">Kopen</span></div><div class="begrip-uitleg">Het platform leent je geld om te kopen. Je speculeert op een stijging zonder de munt echt te bezitten.</div></div>
+      <div class="begrip-card" data-cat="kopen" data-naam="short" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Short</span><span class="begrip-cat cat-kopen">Kopen</span></div><div class="begrip-uitleg">Het platform leent je een munt die je verkoopt. Je speculeert op een daling en koopt later goedkoper terug.</div></div>
+      <div class="begrip-card" data-cat="kopen" data-naam="leverage" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Leverage</span><span class="begrip-cat cat-kopen">Kopen</span></div><div class="begrip-uitleg">Met geleend geld handelen. 10x leverage = je handelt met 10x je inleg. Winst én verlies worden vergroot.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="steun" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Steun</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Prijsniveau waar de markt stopt met dalen en omhoog keert. Kopers komen hier terug.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="weerstand" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Weerstand</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Prijsniveau waar de markt stopt met stijgen en terugzakt. Verkopers komen hier terug.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="rsi" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">RSI</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Getal tussen 0-100. Boven 70 = overbought. Onder 30 = oversold.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="macd" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">MACD</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Meet of een trend versnelt of vertraagt. Twee lijnen die kruisen geven koop of verkoopsignaal.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="swing low" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Swing low</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Lokaal dieptepunt op de grafiek — een dal met aan beide kanten hogere punten.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="sfp" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">SFP</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Swing Failure Pattern — prijs daalt onder swing low maar keert krachtig terug. Bullish signaal.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="marktstructuurshift" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Marktstructuurshift</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">De markt verandert van richting — van bearish naar bullish of andersom.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="bearish retest" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Bearish retest</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Prijs stijgt terug naar gebroken niveau maar zakt daarna weer weg. Steun is nu weerstand.</div></div>
+      <div class="begrip-card" data-cat="ta" data-naam="horizontale range" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Horizontale range</span><span class="begrip-cat cat-ta">Technische analyse</span></div><div class="begrip-uitleg">Prijs beweegt zijwaarts tussen steun en weerstand. Geen duidelijke trend.</div></div>
+      <div class="begrip-card" data-cat="psycho" data-naam="confirmation bias" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Confirmation bias</span><span class="begrip-cat cat-psycho">Mindset</span></div><div class="begrip-uitleg">Je ziet alleen informatie die je eigen mening bevestigt. Gevaarlijk bij marktanalyse.</div></div>
+      <div class="begrip-card" data-cat="psycho" data-naam="risk reward" onclick="toggleBegrip(this)"><div class="begrip-top"><span class="begrip-naam">Risk/reward</span><span class="begrip-cat cat-psycho">Mindset</span></div><div class="begrip-uitleg">Verhouding tussen potentieel verlies en winst. Minimaal 1:2 is een goede verhouding.</div></div>
+    </div>
+  </div>
+
+  <!-- MEER -->
+  <div id="thema-meer" class="thema-content">
+    <div class="coming-soon">
+      <div class="big">＋</div>
+      <p><strong>Meer thema's</strong> komen hier.<br><br>Ideeën: IT & Technologie, Europese digitale autonomie, psychologie van beleggen.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== LES 1: KAARSJES ==================== -->
+<div id="page-les1" class="page">
+  <div class="module-tag">Marktanalyse · Module 1 · Les 1</div>
+  <h1>🕯️ Candlesticks</h1>
+  <p class="subtitle">De basis van elke grafiek — aandelen, crypto, forex</p>
+
+  <div class="section">
+    <h2>Wat is een candlestick?</h2>
+    <p class="intro-text">Een grafiek bestaat niet uit één lijn, maar uit tientallen kleine "candlesticks" (candlesticks). Elk candlestick vertelt het verhaal van een bepaalde periode — bijvoorbeeld 1 uur of 12 uur. Elk candlestick toont 4 dingen: openingsprijs, sluitingsprijs, hoogste punt en laagste punt.</p>
+
+    <div style="display:flex; gap:32px; justify-content:center; padding:20px 0; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <span style="font-family:monospace; font-size:0.8rem; color:#66bb6a;">GROEN = stijging</span>
+        <svg width="80" height="200" viewBox="0 0 80 200">
+          <line x1="40" y1="10" x2="40" y2="50" stroke="#66bb6a" stroke-width="2"/>
+          <rect x="20" y="50" width="40" height="100" fill="#66bb6a" rx="3"/>
+          <line x1="40" y1="150" x2="40" y2="190" stroke="#66bb6a" stroke-width="2"/>
+          <text x="65" y="14" fill="#ffd54f" font-size="8" font-family="monospace">Hoogste</text>
+          <text x="65" y="54" fill="#90caf9" font-size="8" font-family="monospace">Sluiting</text>
+          <text x="65" y="148" fill="#90caf9" font-size="8" font-family="monospace">Opening</text>
+          <text x="65" y="190" fill="#ffd54f" font-size="8" font-family="monospace">Laagste</text>
+        </svg>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <span style="font-family:monospace; font-size:0.8rem; color:#ef5350;">ROOD = daling</span>
+        <svg width="80" height="200" viewBox="0 0 80 200">
+          <line x1="40" y1="10" x2="40" y2="50" stroke="#ef5350" stroke-width="2"/>
+          <rect x="20" y="50" width="40" height="100" fill="#ef5350" rx="3"/>
+          <line x1="40" y1="150" x2="40" y2="190" stroke="#ef5350" stroke-width="2"/>
+          <text x="65" y="14" fill="#ffd54f" font-size="8" font-family="monospace">Hoogste</text>
+          <text x="65" y="54" fill="#90caf9" font-size="8" font-family="monospace">Opening</text>
+          <text x="65" y="148" fill="#90caf9" font-size="8" font-family="monospace">Sluiting</text>
+          <text x="65" y="190" fill="#ffd54f" font-size="8" font-family="monospace">Laagste</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="highlight-box">💡 Het dikke blok = verschil tussen opening en sluiting. De dunne lijntjes = <strong>wicks</strong> of <strong>lontjes</strong> — hoe ver de prijs uitschoot maar terugkwam.</div>
+  </div>
+
+  <div class="section">
+    <h2>Voorbeelden</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="showLesTab('k1', this)">Lang groen</button>
+      <button class="tab" onclick="showLesTab('k2', this)">Lang rood</button>
+      <button class="tab" onclick="showLesTab('k3', this)">Lange wick</button>
+      <button class="tab" onclick="showLesTab('k4', this)">Kleine body</button>
+    </div>
+    <div id="k1" class="tab-content active">
+      <div style="display:flex; align-items:center; gap:16px; padding:12px; background:#0a0e1a; border-radius:10px; border:1px solid #1e2a45;">
+        <svg width="40" height="100" viewBox="0 0 40 100"><line x1="20" y1="5" x2="20" y2="15" stroke="#66bb6a" stroke-width="2"/><rect x="8" y="15" width="24" height="70" fill="#66bb6a" rx="2"/><line x1="20" y1="85" x2="20" y2="95" stroke="#66bb6a" stroke-width="2"/></svg>
+        <div style="font-size:0.85rem; line-height:1.6; color:#cfd8dc;"><strong>Lang groen candlestick</strong><br>De prijs steeg flink. Kopers waren dominant. Bullish signaal.</div>
+      </div>
+    </div>
+    <div id="k2" class="tab-content">
+      <div style="display:flex; align-items:center; gap:16px; padding:12px; background:#0a0e1a; border-radius:10px; border:1px solid #1e2a45;">
+        <svg width="40" height="100" viewBox="0 0 40 100"><line x1="20" y1="5" x2="20" y2="15" stroke="#ef5350" stroke-width="2"/><rect x="8" y="15" width="24" height="70" fill="#ef5350" rx="2"/><line x1="20" y1="85" x2="20" y2="95" stroke="#ef5350" stroke-width="2"/></svg>
+        <div style="font-size:0.85rem; line-height:1.6; color:#cfd8dc;"><strong>Lang rood candlestick</strong><br>De prijs daalde flink. Verkopers waren dominant. Bearish signaal.</div>
+      </div>
+    </div>
+    <div id="k3" class="tab-content">
+      <div style="display:flex; align-items:center; gap:16px; padding:12px; background:#0a0e1a; border-radius:10px; border:1px solid #1e2a45;">
+        <svg width="40" height="100" viewBox="0 0 40 100"><line x1="20" y1="5" x2="20" y2="55" stroke="#66bb6a" stroke-width="2"/><rect x="8" y="55" width="24" height="20" fill="#66bb6a" rx="2"/><line x1="20" y1="75" x2="20" y2="85" stroke="#66bb6a" stroke-width="2"/></svg>
+        <div style="font-size:0.85rem; line-height:1.6; color:#cfd8dc;"><strong>Lange wick bovenaan</strong><br>Prijs schoot hoog maar zakte terug. Verkopers kwamen terug. Waarschuwingssignaal.</div>
+      </div>
+    </div>
+    <div id="k4" class="tab-content">
+      <div style="display:flex; align-items:center; gap:16px; padding:12px; background:#0a0e1a; border-radius:10px; border:1px solid #1e2a45;">
+        <svg width="40" height="100" viewBox="0 0 40 100"><line x1="20" y1="20" x2="20" y2="45" stroke="#ffd54f" stroke-width="2"/><rect x="8" y="45" width="24" height="10" fill="#ffd54f" rx="2"/><line x1="20" y1="55" x2="20" y2="80" stroke="#ffd54f" stroke-width="2"/></svg>
+        <div style="font-size:0.85rem; line-height:1.6; color:#cfd8dc;"><strong>Kleine body (Doji)</strong><br>Opening en sluiting bijna gelijk. Twijfel in de markt — vaak een keerpunt.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Test jezelf</h2>
+    <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:14px;">Wat betekent een rood candlestick met een lange wick onderaan?</p>
+    <button class="quiz-btn" onclick="quiz('q1','a','q1r')">A) De prijs daalde hard en bleef laag</button>
+    <button class="quiz-btn" onclick="quiz('q1','b','q1r')">B) De prijs daalde even maar kopers kwamen terug — bullish signaal</button>
+    <button class="quiz-btn" onclick="quiz('q1','c','q1r')">C) De prijs steeg de hele periode</button>
+    <div id="q1r" class="quiz-result"></div>
+  </div>
+
+  <div class="les-nav-bottom">
+    <button class="les-nav-btn" onclick="goHome()">← Hoofdmenu</button>
+    <button class="les-nav-btn primary" onclick="goToLes('les2', 2)">Les 2: Tijdframes →</button>
+  </div>
+</div>
+
+<!-- ==================== LES 2: TIJDFRAMES ==================== -->
+<div id="page-les2" class="page">
+  <div class="module-tag">Marktanalyse · Module 1 · Les 2</div>
+  <h1>⏱️ Tijdframes</h1>
+  <p class="subtitle">Van 1 minuut tot 4 jaar</p>
+
+  <div class="section">
+    <h2>Wat is een tijdframe?</h2>
+    <p class="intro-text">Elk candlestick stelt een periode voor. Op een 1-uur grafiek is elk candlestick precies 1 uur. Op een weekgrafiek is elk candlestick een hele week. Dezelfde markt ziet er compleet anders uit op verschillende tijdframes.</p>
+    <div class="highlight-box blue">💡 <strong>Vuistregel:</strong> Hoe groter het tijdframe, hoe minder ruis en hoe betrouwbaarder het signaal.</div>
+  </div>
+
+  <div class="section">
+    <h2>Alle tijdframes</h2>
+    <div class="ladder">
+      <div class="ladder-group">
+        <div class="ladder-group-title">⚡ Zeer kort — scalping</div>
+        <div class="ladder-item" onclick="toggleDetail('tf1m')"><div class="ladder-dot" style="background:#ef5350"></div><div class="ladder-name">1 minuut</div><div class="ladder-desc">Extreem korte trades</div></div>
+        <div id="tf1m" class="detail-panel">Alleen voor zeer ervaren traders. Veel ruis, veel stress. Niet voor beginners.</div>
+        <div class="ladder-item" onclick="toggleDetail('tf15m')"><div class="ladder-dot" style="background:#ef5350"></div><div class="ladder-name">15 minuten</div><div class="ladder-desc">Populair bij dagtraders</div></div>
+        <div id="tf15m" class="detail-panel">Iets meer context. Nog steeds veel monitoring nodig.</div>
+      </div>
+      <div class="ladder-group">
+        <div class="ladder-group-title">📊 Kort — dagtrading</div>
+        <div class="ladder-item" onclick="toggleDetail('tf1h')"><div class="ladder-dot" style="background:#ffa726"></div><div class="ladder-name">1 uur</div><div class="ladder-desc">Korte termijn analyse</div></div>
+        <div id="tf1h" class="detail-panel">Goed voor korte termijn bewegingen. Nog actief monitoren nodig.</div>
+        <div class="ladder-item" onclick="toggleDetail('tf4h')"><div class="ladder-dot" style="background:#ffa726"></div><div class="ladder-name">4 uur</div><div class="ladder-desc">Populair bij swingtraders</div></div>
+        <div id="tf4h" class="detail-panel">Één van de meest gebruikte tijdframes. Goed beeld zonder hele dag te monitoren.</div>
+      </div>
+      <div class="ladder-group">
+        <div class="ladder-group-title">📈 Middellang — swingtrading</div>
+        <div class="ladder-item" onclick="toggleDetail('tf12h')"><div class="ladder-dot" style="background:#66bb6a"></div><div class="ladder-name">12 uur</div><div class="ladder-desc">Zipp's voorkeur</div><span class="ladder-badge zipp">zipp</span></div>
+        <div id="tf12h" class="detail-panel">Zipp gebruikt dit veel. Groot genoeg om ruis te filteren, klein genoeg om kansen te zien.</div>
+        <div class="ladder-item" onclick="toggleDetail('tf1d')"><div class="ladder-dot" style="background:#66bb6a"></div><div class="ladder-name">1 dag</div><div class="ladder-desc">Dagelijkse grafiek</div></div>
+        <div id="tf1d" class="detail-panel">Betrouwbare signalen. Goed voor middellange termijn. Eén keer per dag kijken is genoeg.</div>
+      </div>
+      <div class="ladder-group">
+        <div class="ladder-group-title">🔭 Lang — positietrading</div>
+        <div class="ladder-item" onclick="toggleDetail('tf1w')"><div class="ladder-dot" style="background:#90caf9"></div><div class="ladder-name">1 week</div><div class="ladder-desc">Bert's voorkeur</div><span class="ladder-badge bert">bert</span></div>
+        <div id="tf1w" class="detail-panel">Bert Slagter (Satoshi Radio) kijkt naar weeksluitingen. Kleine bewegingen verdwijnen. Je ziet de echte trend.</div>
+        <div class="ladder-item" onclick="toggleDetail('tf1mo')"><div class="ladder-dot" style="background:#90caf9"></div><div class="ladder-name">1 maand</div><div class="ladder-desc">Bert's voorkeur</div><span class="ladder-badge bert">bert</span></div>
+        <div id="tf1mo" class="detail-panel">Bert kijkt vlak na maandsluiting. Hier zie je de grote cycli en echte trendveranderingen.</div>
+      </div>
+      <div class="ladder-group">
+        <div class="ladder-group-title">🌍 Macro — grote cycli</div>
+        <div class="ladder-item" onclick="toggleDetail('tf4y')"><div class="ladder-dot" style="background:#ce93d8"></div><div class="ladder-name">4 jaar cyclus</div><div class="ladder-desc">Bitcoin haveringscyclus</div><span class="ladder-badge" style="background:#2d1b4e;color:#ce93d8;">halvering</span></div>
+        <div id="tf4y" class="detail-panel">Elke ~4 jaar halveert de beloning voor Bitcoin miners. Historisch volgt hier altijd een bullmarkt op, daarna bearmarkt, daarna nieuwe bodem.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Test jezelf</h2>
+    <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:14px;">Bert Slagter kijkt vlak na het einde van de maand naar grafieken. Waarom?</p>
+    <button class="quiz-btn" onclick="quiz('q2','a','q2r')">A) Omdat hij dan tijd heeft</button>
+    <button class="quiz-btn" onclick="quiz('q2','b','q2r')">B) Omdat de maandkaars gesloten is en hij signalen op maandniveau kan zien</button>
+    <button class="quiz-btn" onclick="quiz('q2','c','q2r')">C) Omdat de dagelijkse grafiek dan resetzt</button>
+    <div id="q2r" class="quiz-result"></div>
+  </div>
+
+  <div class="les-nav-bottom">
+    <button class="les-nav-btn" onclick="goToLes('les1', 1)">← Les 1: Candlesticks</button>
+    <button class="les-nav-btn primary" onclick="goToLes('les3', 3)">Les 3: Steun & Weerstand →</button>
+  </div>
+</div>
+
+<!-- ==================== LES 3: STEUN & WEERSTAND ==================== -->
+<div id="page-les3" class="page">
+  <div class="module-tag">Marktanalyse · Module 2 · Les 3</div>
+  <h1>🧱 Steun & Weerstand</h1>
+  <p class="subtitle">De basis van elke grafiekanalyse</p>
+
+  <div class="section">
+    <h2>Wat is het?</h2>
+    <p class="intro-text">Stel je voor: een bal stuitert op de vloer. De vloer is <strong>steun</strong> — de prijs stopt met dalen en keert terug. Een bal die het plafond raakt is <strong>weerstand</strong> — de prijs stopt met stijgen en zakt terug.</p>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="big">🟢</div>
+        <h3 style="color:#66bb6a;">Steun</h3>
+        <p>Prijsniveau waar de markt stopt met dalen. Kopers komen hier terug.</p>
+      </div>
+      <div class="col-card">
+        <div class="big">🔴</div>
+        <h3 style="color:#ef5350;">Weerstand</h3>
+        <p>Prijsniveau waar de markt stopt met stijgen. Verkopers komen hier terug.</p>
+      </div>
+    </div>
+    <div class="highlight-box blue">💡 <strong>Waarom werkt dit?</strong> Omdat veel mensen tegelijkertijd naar dezelfde niveaus kijken. Als iedereen bij €56.000 koopt, wordt dat steun. Dit noemt Bert Slagter het "gedeelde ijkpunt".</div>
+  </div>
+
+  <div class="section">
+    <h2>Visueel uitgelegd</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="showLesTab('s1', this)">Steun</button>
+      <button class="tab" onclick="showLesTab('s2', this)">Weerstand</button>
+      <button class="tab" onclick="showLesTab('s3', this)">Omwisseling</button>
+    </div>
+    <div id="s1" class="tab-content active">
+      <div class="chart-wrap">
+        <svg width="300" height="160" viewBox="0 0 300 160">
+          <line x1="10" y1="120" x2="290" y2="120" stroke="#66bb6a" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="10" y="115" fill="#66bb6a" font-size="8" font-family="monospace">STEUN</text>
+          <path d="M20,40 L50,80 L70,120" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M70,120 L100,70 L130,55" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M130,55 L160,90 L180,120" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M180,120 L210,60 L240,45" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M240,45 L265,85 L280,120" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <text x="62" y="135" fill="#66bb6a" font-size="10">↑</text>
+          <text x="172" y="135" fill="#66bb6a" font-size="10">↑</text>
+          <text x="272" y="135" fill="#66bb6a" font-size="10">↑</text>
+        </svg>
+      </div>
+      <div class="highlight-box green">Hoe vaker de prijs stuitert op steun, hoe <strong>sterker</strong> dat niveau.</div>
+    </div>
+    <div id="s2" class="tab-content">
+      <div class="chart-wrap">
+        <svg width="300" height="160" viewBox="0 0 300 160">
+          <line x1="10" y1="40" x2="290" y2="40" stroke="#ef5350" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="10" y="35" fill="#ef5350" font-size="8" font-family="monospace">WEERSTAND</text>
+          <path d="M20,130 L50,80 L70,40" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M70,40 L100,90 L130,110" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M130,110 L155,70 L175,40" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M175,40 L200,85 L220,105" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M220,105 L245,65 L265,40" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <text x="62" y="30" fill="#ef5350" font-size="10">↓</text>
+          <text x="167" y="30" fill="#ef5350" font-size="10">↓</text>
+          <text x="257" y="30" fill="#ef5350" font-size="10">↓</text>
+        </svg>
+      </div>
+      <div class="highlight-box red">$72.000 is weerstand voor BTC — de prijs is daar al meerdere keren afgewezen. Daarom wordt zipp daar voorzichtig.</div>
+    </div>
+    <div id="s3" class="tab-content">
+      <div class="chart-wrap">
+        <svg width="300" height="180" viewBox="0 0 300 180">
+          <line x1="10" y1="90" x2="290" y2="90" stroke="#ffd54f" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <path d="M20,60 L45,90" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M45,90 L80,50" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <text x="30" y="110" fill="#66bb6a" font-size="7" font-family="monospace">= steun ↑</text>
+          <path d="M80,50 L110,90 L130,130" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <text x="108" y="150" fill="#ef5350" font-size="7" font-family="monospace">doorbraak!</text>
+          <path d="M130,130 L160,90" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <path d="M160,90 L190,130 L220,145" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <text x="148" y="78" fill="#ef5350" font-size="7" font-family="monospace">= nu weerstand ↓</text>
+        </svg>
+      </div>
+      <div class="highlight-box">💡 <strong>Steun wordt weerstand</strong> als het niveau doorbroken wordt. Dit is wat Druppel en zipp bespraken bij $68.500.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Hoe herken je het zelf?</h2>
+    <div class="step"><div class="step-num">1</div><div class="step-text">Open een grafiek op een <strong>groter tijdframe</strong> — week of dag. Kleine tijdframes hebben te veel ruis.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Zoek naar prijsniveaus waar de prijs <strong>meerdere keren</strong> is gestopt. Eén keer telt niet, twee of meer keer wel.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Teken een <strong>horizontale lijn</strong> op dat niveau. Zipp werkt bewust met horizontale lijnen — diagonale zijn subjectiever.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Let op <strong>ronde getallen</strong>. Markten reageren vaak op $60.000, $70.000 of €100 omdat veel mensen daar orders plaatsen.</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text">Kijk hoe de prijs <strong>reageert</strong> als het niveau bereikt wordt. Stuitert het snel weg? Dan is het sterk.</div></div>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Test jezelf</h2>
+    <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:8px;">BTC stijgt meerdere keren naar $72.000 maar zakt daar steeds van terug. Wat is $72.000?</p>
+    <button class="quiz-btn" onclick="quiz('q3','a','q3r')">A) Een steunniveau</button>
+    <button class="quiz-btn" onclick="quiz('q3','b','q3r')">B) Een weerstandsniveau</button>
+    <button class="quiz-btn" onclick="quiz('q3','c','q3r')">C) Een instapniveau</button>
+    <div id="q3r" class="quiz-result"></div>
+  </div>
+
+  <div class="les-nav-bottom">
+    <button class="les-nav-btn" onclick="goToLes('les2', 2)">← Les 2: Tijdframes</button>
+    <button class="les-nav-btn primary" onclick="goToLes('les4', 4)">Les 4: Grafiek lezen →</button>
+  </div>
+</div>
+
+<!-- ==================== LES 4: GRAFIEK LEZEN ==================== -->
+<div id="page-les4" class="page">
+  <div class="module-tag">Marktanalyse · Module 1 · Les 4</div>
+  <h1>📖 Grafiek lezen</h1>
+  <p class="subtitle">Van links naar rechts — trend herkennen</p>
+
+  <div class="section">
+    <h2>Hoe lees je een grafiek?</h2>
+    <p class="intro-text">Een grafiek lees je altijd van <strong>links naar rechts</strong> — net zoals een boek. Links is het verleden, rechts is het heden. Het allerbelangrijkste is: wat vertelt de grafiek je over de <strong>richting</strong> van de markt?</p>
+    <div class="highlight-box blue">💡 Een grafiek is het verhaal van een gevecht tussen kopers en verkopers. Wie wint er op dit moment? Dat zie je aan de trend.</div>
+  </div>
+
+  <div class="section">
+    <h2>De drie richtingen</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="showLesTab('r1', this)">📈 Stijgend</button>
+      <button class="tab" onclick="showLesTab('r2', this)">📉 Dalend</button>
+      <button class="tab" onclick="showLesTab('r3', this)">↔️ Zijwaarts</button>
+    </div>
+
+    <div id="r1" class="tab-content active">
+      <p class="intro-text">Een stijgende trend herken je aan <strong>hogere toppen en hogere bodems</strong>. Elke nieuwe top is hoger dan de vorige, elke nieuwe bodem ook.</p>
+      <div class="chart-wrap">
+        <svg width="300" height="150" viewBox="0 0 300 150">
+          <!-- stijgende trend -->
+          <path d="M20,120 L50,90 L80,100 L120,65 L150,75 L190,40 L220,50 L260,20" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <!-- bodems -->
+          <circle cx="20" cy="120" r="4" fill="#66bb6a"/>
+          <circle cx="80" cy="100" r="4" fill="#66bb6a"/>
+          <circle cx="150" cy="75" r="4" fill="#66bb6a"/>
+          <circle cx="220" cy="50" r="4" fill="#66bb6a"/>
+          <!-- toppen -->
+          <circle cx="50" cy="90" r="4" fill="#ffd54f"/>
+          <circle cx="120" cy="65" r="4" fill="#ffd54f"/>
+          <circle cx="190" cy="40" r="4" fill="#ffd54f"/>
+          <!-- labels -->
+          <text x="10" y="140" fill="#66bb6a" font-size="7" font-family="monospace">bodem 1</text>
+          <text x="68" y="115" fill="#66bb6a" font-size="7" font-family="monospace">bodem 2</text>
+          <text x="138" y="90" fill="#66bb6a" font-size="7" font-family="monospace">bodem 3</text>
+          <text x="38" y="82" fill="#ffd54f" font-size="7" font-family="monospace">top 1</text>
+          <text x="108" y="57" fill="#ffd54f" font-size="7" font-family="monospace">top 2</text>
+          <text x="178" y="32" fill="#ffd54f" font-size="7" font-family="monospace">top 3</text>
+          <text x="200" y="145" fill="#66bb6a" font-size="8" font-family="monospace">→ stijgende trend</text>
+        </svg>
+      </div>
+      <div class="highlight-box green">Elke bodem is hoger dan de vorige — kopers stappen steeds eerder in. Dit is een <strong>stijgende trend</strong> (uptrend).</div>
+    </div>
+
+    <div id="r2" class="tab-content">
+      <p class="intro-text">Een dalende trend herken je aan <strong>lagere toppen en lagere bodems</strong>. Elke nieuwe top is lager dan de vorige, elke nieuwe bodem ook.</p>
+      <div class="chart-wrap">
+        <svg width="300" height="150" viewBox="0 0 300 150">
+          <path d="M20,20 L50,50 L80,35 L120,75 L150,60 L190,95 L220,80 L260,115" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <!-- toppen -->
+          <circle cx="20" cy="20" r="4" fill="#ffd54f"/>
+          <circle cx="80" cy="35" r="4" fill="#ffd54f"/>
+          <circle cx="150" cy="60" r="4" fill="#ffd54f"/>
+          <circle cx="220" cy="80" r="4" fill="#ffd54f"/>
+          <!-- bodems -->
+          <circle cx="50" cy="50" r="4" fill="#ef5350"/>
+          <circle cx="120" cy="75" r="4" fill="#ef5350"/>
+          <circle cx="190" cy="95" r="4" fill="#ef5350"/>
+          <!-- labels -->
+          <text x="8" y="14" fill="#ffd54f" font-size="7" font-family="monospace">top 1</text>
+          <text x="68" y="28" fill="#ffd54f" font-size="7" font-family="monospace">top 2</text>
+          <text x="138" y="53" fill="#ffd54f" font-size="7" font-family="monospace">top 3</text>
+          <text x="38" y="65" fill="#ef5350" font-size="7" font-family="monospace">bodem 1</text>
+          <text x="108" y="90" fill="#ef5350" font-size="7" font-family="monospace">bodem 2</text>
+          <text x="178" y="110" fill="#ef5350" font-size="7" font-family="monospace">bodem 3</text>
+          <text x="185" y="145" fill="#ef5350" font-size="8" font-family="monospace">→ dalende trend</text>
+        </svg>
+      </div>
+      <div class="highlight-box red">Elke top is lager dan de vorige — verkopers stappen steeds eerder in. Dit is een <strong>dalende trend</strong> (downtrend).</div>
+    </div>
+
+    <div id="r3" class="tab-content">
+      <p class="intro-text">Een zijwaartse markt herken je doordat de prijs <strong>tussen twee niveaus beweegt</strong> zonder duidelijke richting. Dit noem je ook een <strong>range</strong>.</p>
+      <div class="chart-wrap">
+        <svg width="300" height="150" viewBox="0 0 300 150">
+          <!-- weerstand lijn -->
+          <line x1="10" y1="40" x2="290" y2="40" stroke="#ef5350" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- steun lijn -->
+          <line x1="10" y1="110" x2="290" y2="110" stroke="#66bb6a" stroke-width="1" stroke-dasharray="4,3"/>
+          <!-- prijs beweegt zijwaarts -->
+          <path d="M20,110 L50,40 L80,110 L120,40 L160,110 L200,40 L240,110 L270,75" fill="none" stroke="#90caf9" stroke-width="2"/>
+          <text x="240" y="35" fill="#ef5350" font-size="8" font-family="monospace">weerstand</text>
+          <text x="240" y="125" fill="#66bb6a" font-size="8" font-family="monospace">steun</text>
+          <text x="80" y="145" fill="#ffd54f" font-size="8" font-family="monospace">→ zijwaartse markt (range)</text>
+        </svg>
+      </div>
+      <div class="highlight-box">💡 BTC zit momenteel in een range tussen ~$65.000 en ~$72.000. Zipp wacht op een uitbraak naar boven of beneden voor zijn volgende move.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Hoe herken je de trend zelf?</h2>
+    <div class="step"><div class="step-num">1</div><div class="step-text">Open een grafiek op een <strong>groter tijdframe</strong> — week of dag. Op kleine tijdframes zie je te veel ruis.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Kijk van <strong>links naar rechts</strong>. Gaat de algemene beweging omhoog, omlaag of zijwaarts?</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Zoek de <strong>toppen en bodems</strong>. Worden de toppen steeds hoger? Dan is het een uptrend. Worden ze lager? Dan is het een downtrend.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text">Vraag jezelf af: <strong>"Wie wint het gevecht — kopers of verkopers?"</strong> Dat is de essentie van elke grafiek.</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><strong>Handel mee met de trend</strong> — niet ertegen in. "The trend is your friend" is één van de oudste regels in technische analyse.</div></div>
+    <div class="highlight-box blue">💡 <strong>Belangrijk:</strong> De trend op een weekgrafiek is belangrijker dan die op een 1-uur grafiek. Altijd eerst het grote tijdframe bekijken.</div>
+  </div>
+
+  <div class="section">
+    <h2>Praktijkvoorbeeld — BTC nu</h2>
+    <p class="intro-text">Laten we dit direct toepassen op de huidige BTC situatie zoals zipp die beschrijft:</p>
+    <div style="background:#0a0e1a; border:1px solid #1e2a45; border-radius:10px; padding:14px; margin-bottom:10px;">
+      <div style="font-family:monospace; font-size:0.7rem; color:#546e7a; margin-bottom:8px;">WEEKGRAFIEK BTC — grote trend</div>
+      <p style="font-size:0.85rem; color:#cfd8dc; line-height:1.6;">BTC maakte een top bij ~$126.000 en daalt sindsdien. Elke top wordt lager, elke bodem ook. Op de weekgrafiek is dit een <span style="color:#ef5350; font-weight:700;">dalende trend</span>.</p>
+    </div>
+    <div style="background:#0a0e1a; border:1px solid #1e2a45; border-radius:10px; padding:14px;">
+      <div style="font-family:monospace; font-size:0.7rem; color:#546e7a; margin-bottom:8px;">12-UURS GRAFIEK BTC — korte termijn</div>
+      <p style="font-size:0.85rem; color:#cfd8dc; line-height:1.6;">Op de 12-uurs grafiek beweegt BTC zijwaarts tussen ~$65.000 en ~$72.000. Zipp ziet hier kortetermijn kansen maar is voorzichtig met de grote trend.</p>
+    </div>
+    <div class="highlight-box">💡 Dit is waarom je altijd <strong>meerdere tijdframes</strong> bekijkt. De grote trend bepaalt de richting, de kleine trend bepaalt het instapmoment.</div>
+  </div>
+
+  <div class="section">
+    <h2>🧠 Test jezelf</h2>
+    <p style="font-size:0.85rem; color:#90a4ae; margin-bottom:8px;">Je kijkt naar een grafiek. Elke nieuwe bodem is hoger dan de vorige. Wat betekent dit?</p>
+    <button class="quiz-btn" onclick="quiz('q4','a','q4r')">A) Het is een dalende trend</button>
+    <button class="quiz-btn" onclick="quiz('q4','b','q4r')">B) Het is een zijwaartse markt</button>
+    <button class="quiz-btn" onclick="quiz('q4','c','q4r')">C) Het is een stijgende trend — kopers stappen steeds eerder in</button>
+    <div id="q4r" class="quiz-result"></div>
+  </div>
+
+  <div class="les-nav-bottom">
+    <button class="les-nav-btn" onclick="goToLes('les3', 3)">← Les 3: Steun & Weerstand</button>
+    <button class="les-nav-btn primary" onclick="goHome()">🏠 Hoofdmenu</button>
+  </div>
+</div>
+
+<script>
+  // Datum
+  const now = new Date();
+  document.getElementById('dateDisplay').innerHTML =
+    now.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+  // Lessen configuratie
+  const lessen = ['les1', 'les2', 'les3', 'les4'];
+  const lesNamen = ['Candlesticks', 'Tijdframes', 'Steun & Weerstand', 'Grafiek lezen'];
+  let huidigeLes = 0;
+
+  // Navigatie
+  function goHome() {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-home').classList.add('active');
+    document.getElementById('navBack').style.display = 'none';
+    document.getElementById('navPrev').style.display = 'none';
+    document.getElementById('navNext').style.display = 'none';
+    document.getElementById('navIndicator').style.display = 'none';
+    window.scrollTo(0, 0);
+  }
+
+  function goToLes(lesId, num) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + lesId).classList.add('active');
+    huidigeLes = num - 1;
+
+    document.getElementById('navBack').style.display = 'block';
+    document.getElementById('navIndicator').style.display = 'block';
+    document.getElementById('navIndicator').textContent = 'Les ' + num + ' / ' + lessen.length;
+
+    document.getElementById('navPrev').style.display = huidigeLes > 0 ? 'block' : 'none';
+    document.getElementById('navNext').style.display = huidigeLes < lessen.length - 1 ? 'block' : 'none';
+
+    if (huidigeLes > 0) {
+      document.getElementById('navPrev').onclick = () => goToLes(lessen[huidigeLes - 1], huidigeLes);
+      document.getElementById('navPrev').textContent = '← Les ' + huidigeLes;
+    }
+    if (huidigeLes < lessen.length - 1) {
+      document.getElementById('navNext').onclick = () => goToLes(lessen[huidigeLes + 1], huidigeLes + 2);
+      document.getElementById('navNext').textContent = 'Les ' + (huidigeLes + 2) + ' →';
+    }
+
+    window.scrollTo(0, 0);
+  }
+
+  // Thema tabs
+  function showThema(id, el) {
+    document.querySelectorAll('.thema-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.thema-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('thema-' + id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // Les tabs
+  function showLesTab(id, el) {
+    const parent = el.closest('.section');
+    parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  // Detail panels
+  function toggleDetail(id) {
+    const el = document.getElementById(id);
+    const isVisible = el.classList.contains('visible');
+    document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('visible'));
+    if (!isVisible) el.classList.add('visible');
+  }
+
+  // Begrippen
+  function toggleBegrip(el) {
+    const uitleg = el.querySelector('.begrip-uitleg');
+    const isOpen = uitleg.classList.contains('visible');
+    document.querySelectorAll('.begrip-uitleg').forEach(u => u.classList.remove('visible'));
+    if (!isOpen) uitleg.classList.add('visible');
+  }
+
+  function filterCat(cat, el) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.begrip-card').forEach(card => {
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'block' : 'none';
+    });
+  }
+
+  function filterBegrippen(val) {
+    const q = val.toLowerCase();
+    document.querySelectorAll('.begrip-card').forEach(card => {
+      card.style.display = card.dataset.naam.includes(q) ? 'block' : 'none';
+    });
+  }
+
+  // Quiz
+  function quiz(vraag, antwoord, resultId) {
+    const r = document.getElementById(resultId);
+    r.style.display = 'block';
+    const correct = {
+      'q1': 'b',
+      'q2': 'b',
+      'q3': 'b',
+      'q4': 'c'
+    };
+    if (antwoord === correct[vraag]) {
+      r.className = 'quiz-result correct';
+      const uitleg = {
+        'q1': '✅ Correct! Een lange wick onderaan betekent dat kopers terugkwamen na een daling. Bullish signaal.',
+        'q2': '✅ Correct! Als de maand sluit kun je het volledige maandcandlestick analyseren voor signalen op maandniveau.',
+        'q3': '✅ Correct! $72.000 is weerstand — de prijs wordt daar steeds afgewezen. Daarom wordt zipp voorzichtig rond dat niveau.',
+        'q4': '✅ Correct! Een hogere bodem betekent dat kopers steeds eerder instappen — de markt wordt sterker. Dat is een stijgende trend.'
+      };
+      r.innerHTML = uitleg[vraag];
+    } else {
+      r.className = 'quiz-result wrong';
+      r.innerHTML = '❌ Niet helemaal. Probeer nog eens!';
+    }
+  }
+</script>
+
+</body>
+</html>
